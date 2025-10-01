@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thingdom — A Kingdom of Cool Stuff</title>
+  <meta name="description" content="A collection of smart, fun, and useful things built by one curious mind" />
+  <meta name="author" content="Thingdom" />
+
+  <meta property="og:title" content="Thingdom — A Kingdom of Cool Stuff" />
+  <meta property="og:description" content="A collection of smart, fun, and useful things built by one curious mind" />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Design System */
+    :root {
+      --background: 240 20% 5%;
+      --foreground: 0 0% 98%;
+      --primary: 260 100% 65%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 200 100% 50%;
+      --secondary-foreground: 0 0% 100%;
+      --muted: 240 10% 20%;
+      --muted-foreground: 240 5% 65%;
+      --accent: 320 100% 65%;
+      --accent-foreground: 0 0% 100%;
+      
+      --gradient-primary-start: 260 100% 65%;
+      --gradient-primary-end: 280 100% 55%;
+      --gradient-secondary-start: 200 100% 50%;
+      --gradient-secondary-end: 180 100% 60%;
+      --gradient-accent-start: 320 100% 65%;
+      --gradient-accent-end: 340 100% 55%;
+      
+      --glow-primary: 260 100% 65%;
+      --glow-secondary: 200 100% 50%;
+      --glow-accent: 320 100% 65%;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* Gradients */
+    .gradient-primary {
+      background: linear-gradient(135deg, hsl(var(--gradient-primary-start)), hsl(var(--gradient-primary-end)));
+    }
+    
+    .gradient-secondary {
+      background: linear-gradient(135deg, hsl(var(--gradient-secondary-start)), hsl(var(--gradient-secondary-end)));
+    }
+    
+    .gradient-accent {
+      background: linear-gradient(135deg, hsl(var(--gradient-accent-start)), hsl(var(--gradient-accent-end)));
+    }
+
+    .gradient-hero {
+      background: linear-gradient(135deg, hsl(var(--gradient-primary-start)), hsl(var(--gradient-secondary-start)), hsl(var(--gradient-accent-start)));
+      background-size: 200% 200%;
+    }
+
+    .text-gradient-primary {
+      background: linear-gradient(135deg, hsl(var(--gradient-primary-start)), hsl(var(--gradient-primary-end)));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .text-gradient-hero {
+      background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+    }
+
+    /* Glows */
+    .glow-primary {
+      box-shadow: 0 0 40px hsl(var(--glow-primary) / 0.3), 0 0 80px hsl(var(--glow-primary) / 0.15);
+    }
+
+    .glow-secondary {
+      box-shadow: 0 0 40px hsl(var(--glow-secondary) / 0.3), 0 0 80px hsl(var(--glow-secondary) / 0.15);
+    }
+
+    .glow-accent {
+      box-shadow: 0 0 40px hsl(var(--glow-accent) / 0.3), 0 0 80px hsl(var(--glow-accent) / 0.15);
+    }
+
+    /* Glass effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes glow {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .animate-glow {
+      animation: glow 3s ease-in-out infinite;
+    }
+
+    .animate-gradient-shift {
+      animation: gradient-shift 6s ease infinite;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Navbar */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 4rem;
+    }
+
+    nav h1 {
+      font-size: 1.875rem;
+      font-weight: 900;
+    }
+
+    nav button {
+      color: hsl(var(--muted-foreground));
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.3s;
+    }
+
+    nav button:hover {
+      color: hsl(var(--primary));
+    }
+
+    nav button svg {
+      transition: transform 0.3s;
+    }
+
+    nav button:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      padding: 5rem 1rem 8rem;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      margin-bottom: 2rem;
+    }
+
+    .hero-badge svg {
+      width: 1rem;
+      height: 1rem;
+      color: hsl(var(--primary));
+    }
+
+    .hero-badge span {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .hero h2 {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: hsl(var(--muted-foreground));
+      max-width: 42rem;
+      margin: 0 auto 3rem;
+      line-height: 1.6;
+    }
+
+    .hero p .highlight {
+      font-weight: 600;
+    }
+
+    .hero p .primary { color: hsl(var(--primary)); }
+    .hero p .secondary { color: hsl(var(--secondary)); }
+    .hero p .accent { color: hsl(var(--accent)); }
+
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1.5rem 2rem;
+      font-size: 1.125rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.3s;
+      color: white;
+    }
+
+    .hero-button:hover {
+      opacity: 0.9;
+    }
+
+    .hero-button svg {
+      transition: transform 0.3s;
+    }
+
+    .hero-button:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* Background blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .blob-1 {
+      top: 25%;
+      left: -5rem;
+      width: 24rem;
+      height: 24rem;
+    }
+
+    .blob-2 {
+      top: 50%;
+      right: -5rem;
+      width: 24rem;
+      height: 24rem;
+      animation-delay: 2s;
+    }
+
+    .blob-3 {
+      bottom: 25%;
+      left: 33%;
+      width: 24rem;
+      height: 24rem;
+      animation-delay: 4s;
+    }
+
+    /* Floating elements */
+    .float-element {
+      position: absolute;
+      filter: blur(4px);
+      opacity: 0.4;
+    }
+
+    .float-1 {
+      top: 25%;
+      left: 25%;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 0.5rem;
+    }
+
+    .float-2 {
+      top: 33%;
+      right: 25%;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      animation-delay: 1s;
+    }
+
+    .float-3 {
+      bottom: 25%;
+      left: 33%;
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 0.5rem;
+      animation-delay: 2s;
+    }
+
+    /* Projects Section */
+    .projects {
+      padding: 5rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .projects-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .projects-header h3 {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+
+    .projects-header p {
+      color: hsl(var(--muted-foreground));
+      font-size: 1.125rem;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .projects-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Project Card */
+    .project-card-wrapper {
+      position: relative;
+    }
+
+    .project-card-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      filter: blur(48px);
+      opacity: 0.2;
+      transition: opacity 0.3s;
+    }
+
+    .project-card-wrapper:hover .project-card-glow {
+      opacity: 0.4;
+    }
+
+    .project-card {
+      position: relative;
+      border-radius: 1rem;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+
+    .project-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .project-card-primary {
+      border: 1px solid hsl(var(--primary) / 0.2);
+    }
+
+    .project-card-primary:hover {
+      border-color: hsl(var(--primary) / 0.4);
+    }
+
+    .project-card-secondary {
+      border: 1px solid hsl(var(--secondary) / 0.2);
+    }
+
+    .project-card-secondary:hover {
+      border-color: hsl(var(--secondary) / 0.4);
+    }
+
+    .project-card-accent {
+      border: 1px solid hsl(var(--accent) / 0.2);
+    }
+
+    .project-card-accent:hover {
+      border-color: hsl(var(--accent) / 0.4);
+    }
+
+    .project-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-icon svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: white;
+    }
+
+    .project-card h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-card p {
+      color: hsl(var(--muted-foreground));
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: gap 0.3s;
+    }
+
+    .project-link:hover {
+      gap: 1rem;
+    }
+
+    .project-link-primary { color: hsl(var(--primary)); }
+    .project-link-secondary { color: hsl(var(--secondary)); }
+    .project-link-accent { color: hsl(var(--accent)); }
+
+    .project-link svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 8rem;
+    }
+
+    footer .container {
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    footer p {
+      color: hsl(var(--muted-foreground));
+    }
+
+    footer .accent-text {
+      color: hsl(var(--accent));
+    }
+
+    @media (max-width: 640px) {
+      .hero h2 {
+        font-size: 3rem;
+      }
+      
+      nav h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background blobs -->
+  <div class="blob blob-1 gradient-primary animate-float"></div>
+  <div class="blob blob-2 gradient-secondary animate-float"></div>
+  <div class="blob blob-3 gradient-accent animate-float"></div>
+
+  <!-- Navbar -->
+  <nav class="glass">
+    <div class="container">
+      <h1>
+        <span class="text-gradient-primary">Thing</span><span>dom</span>
+      </h1>
+      <button onclick="scrollToProjects()">
+        <span>Projects</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge glass animate-glow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+        </svg>
+        <span>Welcome to the Kingdom</span>
+      </div>
+      
+      <h2>
+        <span class="text-gradient-hero animate-gradient-shift">Thingdom</span>
+      </h2>
+      
+      <p>
+        A collection of <span class="highlight primary">smart</span>, <span class="highlight secondary">fun</span>, and <span class="highlight accent">useful</span> things built by one curious mind. Dive in and explore!
+      </p>
+
+      <button class="hero-button gradient-primary glow-primary" onclick="scrollToProjects()">
+        Explore Projects
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+
+      <!-- Floating elements -->
+      <div class="float-element float-1 gradient-primary animate-float"></div>
+      <div class="float-element float-2 gradient-secondary animate-float"></div>
+      <div class="float-element float-3 gradient-accent animate-float"></div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects" class="projects">
+    <div class="container">
+      <div class="projects-header">
+        <h3>
+          Featured <span class="text-gradient-primary">Projects</span>
+        </h3>
+        <p>Tools and experiments from the lab</p>
+      </div>
+
+      <div class="projects-grid">
+        <!-- Attendance Calculator Card -->
+        <div class="project-card-wrapper">
+          <div class="project-card-glow gradient-primary"></div>
+          <div class="project-card project-card-primary glass">
+            <div class="project-icon gradient-primary glow-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <h4>Attendance Drop Calculator</h4>
+            <p>
+              Find out how many classes you can skip and still stay above your target attendance percentage.
+            </p>
+            <a href="./attendanced/plan-absence.html" class="project-link project-link-primary">
+              Try It Now
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Coming Soon Card -->
+        <div class="project-card-wrapper">
+          <div class="project-card-glow gradient-secondary"></div>
+          <div class="project-card project-card-secondary glass">
+            <div class="project-icon gradient-secondary glow-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path>
+                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path>
+              </svg>
+            </div>
+            <h4>Coming Soon</h4>
+            <p style="font-style: italic;">
+              More tools are under construction. Stay tuned for what's next in Thingdom.
+            </p>
+            <div class="project-link project-link-secondary">
+              <span class="animate-glow">⏳</span>
+              In Development
+            </div>
+          </div>
+        </div>
+
+        <!-- Placeholder Card -->
+        <div class="project-card-wrapper">
+          <div class="project-card-glow gradient-accent"></div>
+          <div class="project-card project-card-accent glass">
+            <div class="project-icon gradient-accent glow-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+              </svg>
+            </div>
+            <h4>Something Useful</h4>
+            <p style="font-style: italic;">
+              Like a GPA calculator, unit converter, code playground... whatever you're cooking.
+            </p>
+            <div class="project-link project-link-accent">
+              <span style="animation: bounce 1s infinite;">🚀</span>
+              Ideas Welcome
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>
+        © 2025 <span class="text-gradient-primary" style="font-weight: 700;">Thingdom</span> — Built with <span class="accent-text">❤️</span> and caffeine
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function scrollToProjects() {
+      document.getElementById('projects').scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    }
+
+    // Add bounce animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
