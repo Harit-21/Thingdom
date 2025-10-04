@@ -13,25 +13,8 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Scrollbar Track */
-    ::-webkit-scrollbar {
-      width: 7px;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #2a86ff;
-      border-radius: 10px;
-      border: 0.1px solid #f1f1f1;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: #555;
+    ::-webkit-scrollbar{
+      display: none;
     }
 
     body {
@@ -49,22 +32,6 @@
 
     #max-drop-overlay.show #max-drop-card {
       transform: translateY(0);
-    }
-
-    @media (max-width: 438px) {
-      ::-webkit-scrollbar {
-        display: none;
-      }
-    }
-
-    .toggle-checkbox:checked+.toggle-label {
-      background-color: #3b82f6;
-      /* Tailwind's blue-500 */
-    }
-
-    .toggle-checkbox:checked+.toggle-label span {
-      transform: translateX(24px);
-      /* move the knob */
     }
   </style>
 </head>
@@ -115,18 +82,9 @@
           <p class="text-xs text-gray-500 mb-2">Ensure your data includes columns for 'Present', 'OD', and 'Absent'.</p>
 
 
-          <div class="relative">
-            <textarea id="data-input"
-              class="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-none transition duration-150"
-              placeholder="Paste your table data (tab-separated or space-separated) here..."></textarea>
-
-            <!-- Clear Button Inside Textarea -->
-            <button onclick="clearTextarea()" title="Clear Attendance Data"
-              class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-lg transition-transform duration-200 transform hover:-translate-y-1 focus:outline-none"
-              aria-label="Clear textarea">
-              🗑️
-            </button>
-          </div>
+          <textarea id="data-input"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-none transition duration-150"
+            placeholder="Paste your table data (tab-separated or space-separated) here..."></textarea>
         </div>
 
         <div class="flex justify-center gap-3 mt-2">
@@ -305,7 +263,7 @@
       </div>
 
       <hr class="py-3">
-<!-- 
+
       <fieldset class="mt-4">
         <legend class="font-semibold mb-2">What would you like on arrival:</legend>
 
@@ -323,79 +281,25 @@
           <input type="radio" name="loadOption" value="none" id="none-radio">
           <span>Do nothing</span>
         </label>
-      </fieldset> -->
-
-      <div class="mt-6">
-        <label class="block font-semibold mb-2">What would you like on arrival?</label>
-        <div class="flex gap-2 bg-gray-100 p-1 rounded-full w-full max-w-md shadow-inner">
-
-          <input type="radio" name="loadOption" value="resume" id="resume" class="hidden peer/resume" />
-          <label for="resume"
-            class="peer-checked/resume:bg-blue-600 peer-checked/resume:text-white cursor-pointer px-4 py-2 text-sm rounded-full transition-colors duration-200">
-            Resume Last Save
-          </label>
-
-          <input type="radio" name="loadOption" value="clipboard" id="clipboard" class="hidden peer/clipboard" />
-          <label for="clipboard"
-            class="peer-checked/clipboard:bg-blue-600 peer-checked/clipboard:text-white cursor-pointer px-4 py-2 text-sm rounded-full transition-colors duration-200">
-            Paste from Clipboard
-          </label>
-
-          <input type="radio" name="loadOption" value="none" id="none" class="hidden peer/none" />
-          <label for="none"
-            class="peer-checked/none:bg-blue-600 peer-checked/none:text-white cursor-pointer px-4 py-2 text-sm rounded-full transition-colors duration-200">
-            Do Nothing
-          </label>
-
-        </div>
-      </div>
-
-
-      <div class="mt-6 flex items-center justify-between">
-        <label for="show-overlay-toggle" class="text-sm font-medium text-gray-700">
-          Show attendance alert popup?
-        </label>
-
-        <input type="checkbox" id="show-overlay-toggle" class="toggle-checkbox hidden" />
-        <label for="show-overlay-toggle"
-          class="toggle-label relative inline-block w-12 h-6 bg-gray-300 rounded-full cursor-pointer transition">
-          <span
-            class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform"></span>
-        </label>
-      </div>
-
-
+      </fieldset>
 
     </div>
   </div>
 
   <!-- Max Drop Overlay -->
-  <div id="max-drop-overlay"
-    class="fixed inset-0 z-50 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center hidden transition-all duration-500">
+  <div id="max-drop-overlay" class="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-end justify-center hidden">
     <div id="max-drop-card"
-      class="w-full max-w-2xl bg-white/90 rounded-3xl p-10 shadow-2xl backdrop-blur-lg border border-white/30 relative overflow-hidden transform scale-95 opacity-0 translate-y-10 transition-all duration-500 ease-out">
-
-      <!-- Glowing animated background (optional visual effect) -->
-      <div
-        class="absolute -top-20 -left-20 w-80 h-80 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full blur-3xl opacity-30 animate-pulse">
-      </div>
-
-      <!-- Content -->
-      <div class="relative z-10 text-center">
-        <div id="lottie-container" class="w-36 h-36 mx-auto mb-6"></div>
-
-        <h2 id="max-drop-message" class="text-3xl font-extrabold text-gray-800 mb-4 tracking-wide">Calculating...</h2>
-        <p id="max-drop-details" class="text-lg text-gray-600 mb-6">Please wait while we analyze your attendance data.
-        </p>
-
+      class="w-full max-w-md bg-white rounded-t-3xl p-6 shadow-xl transition-transform duration-500 translate-y-full">
+      <div class="text-center">
+        <div id="lottie-container" class="w-28 h-28 mx-auto mb-4"></div>
+        <h2 class="text-xl font-bold mb-2" id="max-drop-message">Calculating...</h2>
+        <p class="text-gray-600" id="max-drop-details">Please wait...</p>
         <button onclick="dismissMaxDropOverlay()"
-          class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-full text-lg shadow-lg hover:scale-105 transition-transform duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-400/50">
-          Got it!
-        </button>
+          class="mt-6 bg-blue-600 text-white px-5 py-2 rounded-full shadow hover:bg-blue-700 transition">Got
+          it!</button>
       </div>
     </div>
   </div>
-
 
   <div id="toast"
     class="fixed top-5 right-5 z-50 hidden items-center gap-2 rounded-lg bg-black px-4 py-2 text-white shadow-md transition-opacity duration-300">
@@ -802,13 +706,13 @@
       const simTotal = simWeeks * simClassesPerWeek;
 
       if (simPlanAttend < 0) {
-        showToast(`Planned attendance cannot be negative. You can't un-attend classes!`);
+        showMessage('error', `Planned attendance cannot be negative. You can't un-attend classes!`);
         document.getElementById('simulation-result').classList.add('hidden');
         return;
       }
 
       if (simPlanAttend > simTotal) {
-        showToast(`You cannot attend ${simPlanAttend} classes — only ${simTotal} are possible in ${simWeeks} weeks.`);
+        showMessage('error', `You cannot attend ${simPlanAttend} classes — only ${simTotal} are possible in ${simWeeks} weeks.`);
         document.getElementById('simulation-result').classList.add('hidden');
         return;
       }
@@ -1063,9 +967,7 @@
     });
 
     function showMaxDropOverlay(maxDropValue) {
-      const showOverlayPref = localStorage.getItem('showOverlay');
-      if (showOverlayPref === 'no') return;
-
+      // Only show once per session
       const prevDrop = sessionStorage.getItem('prevMaxDrop');
       if (prevDrop !== null && parseInt(prevDrop) === maxDropValue) return;
       sessionStorage.setItem('prevMaxDrop', maxDropValue);
@@ -1074,50 +976,42 @@
         sessionStorage.removeItem('prevMaxDrop');
       });
 
+
       const overlay = document.getElementById('max-drop-overlay');
       const card = document.getElementById('max-drop-card');
       const message = document.getElementById('max-drop-message');
       const details = document.getElementById('max-drop-details');
       const lottieContainer = document.getElementById('lottie-container');
 
-      // Set message and animation
+      // Set message and emoji based on maxDrop
       if (maxDropValue >= 5) {
-        message.innerHTML = `😎 Great News! 🎉`;
+        message.innerHTML = `🎉😎 Great News!`;
         details.innerHTML = `You can afford to miss <strong>${maxDropValue}</strong> more classes. Keep it up!`;
+
         loadLottie(lottieContainer, 'https://assets7.lottiefiles.com/packages/lf20_jtbfg2nb.json'); // confetti
       } else if (maxDropValue > 0) {
-        message.innerHTML = `😬 Heads Up ⚠️`;
+        message.innerHTML = `⚠️😬 Heads Up`;
         details.innerHTML = `Only <strong>${maxDropValue}</strong> skips left. Plan wisely.`;
+
         loadLottie(lottieContainer, 'https://assets1.lottiefiles.com/private_files/lf30_hxartdls.json'); // warning
       } else {
-        message.innerHTML = `🚨 No More Skips! ❌`;
+        message.innerHTML = `❌🚨 No More Skips!`;
         details.innerHTML = `You're at your limit. Attend all upcoming classes to stay safe.`;
+
         loadLottie(lottieContainer, 'https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json'); // alert
       }
 
-      // Show overlay and animate card
       overlay.classList.remove('hidden');
-      setTimeout(() => {
-        card.classList.remove('opacity-0', 'translate-y-10', 'scale-95');
-        card.classList.add('opacity-100', 'translate-y-0', 'scale-100');
-      }, 20);
-    }
+      setTimeout(() => overlay.classList.add('show'), 50); // animate card in
 
+      sessionStorage.setItem('shownMaxDropOverlay', 'true'); // prevent repeat in same session
+    }
 
     function dismissMaxDropOverlay() {
       const overlay = document.getElementById('max-drop-overlay');
-      const card = document.getElementById('max-drop-card');
-
-      // Animate out
-      card.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
-      card.classList.add('opacity-0', 'translate-y-10', 'scale-95');
-
-      // Fully hide after animation
-      setTimeout(() => {
-        overlay.classList.add('hidden');
-      }, 500);
+      overlay.classList.remove('show');
+      setTimeout(() => overlay.classList.add('hidden'), 500);
     }
-
 
     function loadLottie(container, url) {
       container.innerHTML = ''; // clear previous
@@ -1130,22 +1024,6 @@
       });
     }
 
-    // Set toggle from localStorage
-    window.addEventListener('DOMContentLoaded', () => {
-      const toggle = document.getElementById('show-overlay-toggle');
-      const pref = localStorage.getItem('showOverlay');
-      toggle.checked = pref !== 'no'; // default is "yes"
-    });
-
-    // Save toggle state on change
-    document.getElementById('show-overlay-toggle').addEventListener('change', (e) => {
-      localStorage.setItem('showOverlay', e.target.checked ? 'yes' : 'no');
-    });
-
-
-    function clearTextarea() {
-      document.getElementById('data-input').value = '';
-    }
 
   </script>
 </body>
