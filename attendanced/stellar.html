@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellar Attendance Calculator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css" />
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
+
+    <style>
+        /* ==============================================
+           ===== 1. DESIGN SYSTEM & CSS VARIABLES =====
+           ============================================== */
+        :root {
+            --bg-primary-light: #f0f4f8;
+            --bg-secondary-light: #ffffff;
+            --text-primary-light: #0f172a;
+            --text-secondary-light: #64748b;
+            --border-light: #e2e8f0;
+            
+            --bg-primary-dark: #020617;
+            --bg-secondary-dark: #1e293b;
+            --text-primary-dark: #f1f5f9;
+            --text-secondary-dark: #94a3b8;
+            --border-dark: #334155;
+
+            --primary: #4f46e5;
+            --primary-light: #a5b4fc;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+
+            --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --gradient-error: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+            
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            --radius: 1.5rem;
+        }
+
+        /* ==============================================
+           ===== 2. DYNAMIC ANIMATED GRADIENT BG ======
+           ============================================== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 10% 20%, var(--primary-light), transparent 40%),
+                        radial-gradient(circle at 80% 90%, var(--success), transparent 40%),
+                        radial-gradient(circle at 50% 50%, var(--warning), transparent 30%);
+            background-color: var(--bg-primary-light);
+            z-index: -1;
+            animation: moveGradient 20s ease-in-out infinite;
+            transition: background-color 0.5s ease;
+        }
+
+        .dark body::before {
+            background: radial-gradient(circle at 10% 20%, var(--primary), transparent 40%),
+                        radial-gradient(circle at 80% 90%, var(--success), transparent 40%),
+                        radial-gradient(circle at 50% 50%, #7c3aed, transparent 30%);
+            background-color: var(--bg-primary-dark);
+        }
+        
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ==============================================
+           ===== 3. GENERAL STYLING & LAYOUT ==========
+           ============================================== */
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary-light);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            transition: color 0.5s ease;
+            overflow-x: hidden;
+        }
+        .dark body { color: var(--text-primary-dark); }
+        .container { max-width: 700px; margin: 0 auto; }
+        .hidden { display: none !important; }
+
+        /* ==============================================
+           ===== 4. HEADER & THEME TOGGLE =============
+           ============================================== */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .header p { color: var(--text-secondary-light); }
+        .dark .header p { color: var(--text-secondary-dark); }
+
+        /* ==============================================
+           ===== 5. 3D INTERACTIVE AURORA CARD ========
+           ============================================== */
+        .perspective-container {
+            perspective: 1000px;
+        }
+        .interactive-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: background 0.5s ease, transform 0.1s linear;
+        }
+        .dark .interactive-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(51, 65, 85, 0.7);
+        }
+        .interactive-card::before { /* Aurora Glow Border */
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--radius);
+            background: radial-gradient(300px circle at var(--x, 0) var(--y, 0), var(--primary) 0%, transparent 40%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .interactive-card:hover::before {
+            opacity: 1;
+        }
+
+        /* ==============================================
+           ===== 6. FORM ELEMENTS & BUTTONS ===========
+           ============================================== */
+        .input-group label {
+            display: block; font-weight: 600; margin-bottom: 0.5rem;
+            color: var(--text-secondary-light);
+        }
+        .dark .input-group label { color: var(--text-secondary-dark); }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 0.75rem;
+            background: var(--bg-secondary-light);
+            color: var(--text-primary-light);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        .dark input, .dark textarea, .dark select {
+            background: var(--bg-secondary-dark);
+            border-color: var(--border-dark);
+            color: var(--text-primary-dark);
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        textarea { min-height: 150px; resize: vertical; }
+
+        .btn {
+            padding: 0.75rem 1.5rem; border: none;
+            border-radius: 0.75rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            position: relative; overflow: hidden;
+            transform: translateZ(0); /* For ripple effect */
+        }
+        .btn-primary {
+            background: var(--gradient-primary); color: white;
+            box-shadow: var(--shadow-lg); width: 100%;
+        }
+        .btn:hover { transform: translateY(-3px) scale(1.02); }
+        .btn:active { transform: translateY(0) scale(0.98); }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* ==============================================
+           ===== 7. RESULTS & METRICS DISPLAY =========
+           ============================================== */
+        .results-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 1rem; margin-bottom: 2rem;
+        }
+        .dark .results-header { border-color: var(--border-dark); }
+        
+        .results-title { font-size: 1.5rem; font-weight: 700; }
+
+        .result-main {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 1.5rem; text-align: center;
+        }
+        .max-drop-display {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            display: grid; place-content: center;
+            position: relative;
+        }
+        .max-drop-display::before { /* Pulse effect */
+            content: ''; position: absolute; inset: 0;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .max-drop-bg-safe { background: rgba(16, 185, 129, 0.1); }
+        .max-drop-bg-safe::before { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        .max-drop-bg-danger { background: rgba(239, 68, 68, 0.1); }
+        .max-drop-bg-danger::before { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+
+        .max-drop-value {
+            font-size: 4rem; font-weight: 800;
+            line-height: 1;
+            color: var(--text-primary-light);
+        }
+        .dark .max-drop-value { color: var(--text-primary-dark); }
+        .max-drop-label {
+            font-size: 0.875rem; color: var(--text-secondary-light);
+            font-weight: 500;
+        }
+        .dark .max-drop-label { color: var(--text-secondary-dark); }
+
+        .metrics-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1rem; width: 100%;
+        }
+        .metric-card {
+            background: var(--bg-secondary-light);
+            padding: 1rem; border-radius: 1rem;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .dark .metric-card {
+            background: var(--bg-secondary-dark);
+            border-color: var(--border-dark);
+        }
+        .metric-label {
+            font-size: 0.75rem; font-weight: 600;
+            color: var(--text-secondary-light); margin-bottom: 0.25rem;
+        }
+        .dark .metric-label { color: var(--text-secondary-dark); }
+        .metric-value { font-size: 1.5rem; font-weight: 700; }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 var(--shadow-color); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0,0,0,0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+        }
+
+        /* ==============================================
+           ===== 8. OVERLAYS, TOASTS & SHEPHERD =======
+           ============================================== */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px); display: none;
+            align-items: center; justify-content: center; z-index: 9999;
+        }
+        .overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+
+        .overlay-card {
+            background: var(--bg-secondary-light); border-radius: var(--radius);
+            padding: 2rem; max-width: 400px; width: 90%;
+            box-shadow: var(--shadow-xl);
+            animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .dark .overlay-card { background: var(--bg-secondary-dark); }
+
+        .toast {
+            position: fixed; bottom: 1.5rem; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.9); color: white;
+            padding: 0.75rem 1.5rem; border-radius: 99px;
+            box-shadow: var(--shadow-xl); display: none; align-items: center;
+            gap: 0.5rem; z-index: 10000;
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .toast.show { display: flex; }
+
+        /* Shepherd Tour Customization */
+        .shepherd-element {
+            background-color: var(--bg-secondary-light) !important;
+            border-radius: var(--radius) !important;
+            box-shadow: var(--shadow-xl) !important;
+        }
+        .dark .shepherd-element { background-color: var(--bg-secondary-dark) !important; }
+
+        /* Keyframes */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Stellar Attendance Calculator</h1>
+            <p>Visualize your path to attendance success.</p>
+        </header>
+
+        <div class="perspective-container">
+            <div class="interactive-card">
+                <div style="display: grid; gap: 2rem;">
+
+                    <div class="input-group">
+                        <label>1. Provide Your Data</label>
+                        <div id="dropzone" style="border: 2px dashed var(--border-light); border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                            <div style="font-size: 2rem;">📁</div>
+                            <p style="font-weight: 600; margin-top: 0.5rem;">Drop your CSV/XLSX file here</p>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary-light); margin-top: 0.25rem;">or click to select</p>
+                            <input type="file" id="file-upload" accept=".csv,.xlsx" class="hidden">
+                        </div>
+                        <div style="text-align: center; margin: 0.75rem 0; color: var(--text-secondary-light);">OR</div>
+                        <button id="paste-btn" class="btn" style="width: 100%; background: var(--bg-secondary-light); color: var(--text-primary-light); border: 1px solid var(--border-light);">
+                            <span style="font-size: 1.25rem;">📋</span> Paste Data from Clipboard
+                        </button>
+                        <textarea id="data-input" class="hidden" placeholder="Your pasted data will appear here..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="target-percent">2. Set Your Target</label>
+                        <input type="number" id="target-percent" value="75" min="1" max="100">
+                    </div>
+
+                </div>
+
+                <div id="results" class="hidden" style="margin-top: 2.5rem;">
+                    <div class="results-header">
+                        <h2 class="results-title">Your Standing</h2>
+                    </div>
+
+                    <div id="error-message" class="hidden" style="padding: 1rem; border-radius: 1rem; text-align: center; font-weight: 600; background: rgba(239, 68, 68, 0.1); color: var(--error); margin-bottom: 1rem;"></div>
+
+                    <div class="result-main">
+                        <div id="max-drop-display" class="max-drop-display">
+                            <span id="max-drop" class="max-drop-value">0</span>
+                            <span class="max-drop-label">Skips Available</span>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">✅ Attended</div>
+                                <div id="total-attended" class="metric-value">0</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">📚 Conducted</div>
+                                <div id="total-conducted" class="metric-value">0</div>
+                            </div>
+                        </div>
+                        
+                        <div id="message-box" class="hidden" style="width: 100%; padding: 0.75rem; border-radius: 99px; text-align: center; font-weight: 600;"></div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                         <button id="toggle-details-btn" class="btn" style="background: transparent; color: var(--primary);">Show Details & Charts</button>
+                    </div>
+
+                    <div id="details-container" class="hidden" style="margin-top: 1.5rem; display: grid; gap: 1.5rem;">
+                        <div id="subject-chart-container" style="height: 300px;"><canvas id="subjectBarChart"></canvas></div>
+                        <div id="overall-chart-container" style="height: 250px;"><canvas id="overallDonutChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="max-drop-overlay">
+        <div class="overlay-card" style="text-align: center;">
+            <div id="lottie-container" style="width: 120px; height: 120px; margin: 0 auto 1rem;"></div>
+            <h2 id="overlay-title" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;"></h2>
+            <p id="overlay-details" style="color: var(--text-secondary-light); font-size: 1.125rem; margin-bottom: 1.5rem;"></p>
+            <button class="btn btn-primary" id="dismiss-overlay-btn">Got it!</button>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">
+        <span id="toast-icon">✅</span>
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Element Cache ---
+        const DOMElements = {
+            html: document.documentElement,
+            interactiveCard: document.querySelector('.interactive-card'),
+            dropzone: document.getElementById('dropzone'),
+            fileInput: document.getElementById('file-upload'),
+            dataInput: document.getElementById('data-input'),
+            pasteBtn: document.getElementById('paste-btn'),
+            targetPercent: document.getElementById('target-percent'),
+            results: document.getElementById('results'),
+            errorMessage: document.getElementById('error-message'),
+            messageBox: document.getElementById('message-box'),
+            maxDropDisplay: document.getElementById('max-drop-display'),
+            maxDropValue: document.getElementById('max-drop'),
+            totalAttended: document.getElementById('total-attended'),
+            totalConducted: document.getElementById('total-conducted'),
+            toggleDetailsBtn: document.getElementById('toggle-details-btn'),
+            detailsContainer: document.getElementById('details-container'),
+            overlay: document.getElementById('max-drop-overlay'),
+            dismissOverlayBtn: document.getElementById('dismiss-overlay-btn'),
+            toast: document.getElementById('toast'),
+            toastMessage: document.getElementById('toast-message'),
+            toastIcon: document.getElementById('toast-icon')
+        };
+        
+        // --- State Management ---
+        let chartInstances = { overall: null, subject: null };
+        let lottieAnimation = null;
+        let audioContext;
+        const sounds = {};
+
+        // --- 1. Sound Engine (for tactile feedback) ---
+        const initAudio = () => {
+            if (audioContext) return;
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // A tiny sound for generic clicks
+                sounds.click = createSound(880, 0.05, 'sine');
+                // A rising sound for success
+                sounds.success = createSound(523, 0.1, 'triangle', 880);
+            } catch (e) {
+                console.warn("Web Audio API is not supported in this browser.");
+            }
+        };
+
+        const createSound = (startFreq, duration, type, endFreq) => {
+            return () => {
+                if (!audioContext) return;
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(startFreq, audioContext.currentTime);
+                if(endFreq) oscillator.frequency.exponentialRampToValueAtTime(endFreq, audioContext.currentTime + duration);
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            };
+        };
+        
+        const playSound = (soundName) => {
+            sounds[soundName]?.();
+        };
+
+        // --- 2. Theme Management ---
+        const applyTheme = (isDark) => {
+            DOMElements.html.classList.toggle('dark', isDark);
+            if (DOMElements.results.checkVisibility()) {
+                calculateHours();
+            }
+        };
+
+        // --- 3. 3D Interactive Card Tilt Effect ---
+        DOMElements.interactiveCard.addEventListener('mousemove', (e) => {
+            const card = DOMElements.interactiveCard;
+            const { left, top, width, height } = card.getBoundingClientRect();
+            const x = e.clientX - left;
+            const y = e.clientY - top;
+            const rotateX = (y - height / 2) / 20;
+            const rotateY = -(x - width / 2) / 20;
+            
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            card.style.setProperty('--x', `${x}px`);
+            card.style.setProperty('--y', `${y}px`);
+        });
+
+        DOMElements.interactiveCard.addEventListener('mouseleave', () => {
+            DOMElements.interactiveCard.style.transform = 'rotateX(0) rotateY(0)';
+        });
+
+        // --- 4. File Handling & Data Input ---
+        const handleFile = (file) => {
+            const reader = new FileReader();
+            const ext = file.name.split('.').pop().toLowerCase();
+
+            const processData = (text) => {
+                DOMElements.dataInput.value = text;
+                sessionStorage.removeItem('overlayShown');
+                playSound('success');
+                showToast('✅ File loaded successfully!', 'success');
+                calculateHours();
+            };
+
+            if (ext === 'csv') {
+                reader.onload = (e) => processData(e.target.result.trim());
+                reader.readAsText(file);
+            } else if (ext === 'xlsx') {
+                reader.onload = (e) => {
+                    try {
+                        const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                        const csvText = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]]).trim();
+                        processData(csvText);
+                    } catch (error) {
+                        showToast('❌ Error reading Excel file', 'error');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                showToast('❌ Unsupported file type.', 'error');
+            }
+        };
+
+        // --- 5. Core Calculation Logic ---
+        const calculateHours = () => {
+            const rawData = DOMElements.dataInput.value.trim();
+            if (!rawData) return;
+            
+            DOMElements.results.classList.remove('hidden');
+            DOMElements.errorMessage.classList.add('hidden');
+            DOMElements.messageBox.classList.add('hidden');
+
+            const targetPercentage = parseFloat(DOMElements.targetPercent.value) / 100;
+            if (isNaN(targetPercentage) || targetPercentage <= 0 || targetPercentage > 1) {
+                showError('Target must be between 1 and 100.');
+                return;
+            }
+            
+            let lines = rawData.split('\n').filter(line => line.trim() !== '');
+            let startRowIndex = lines.findIndex(line => {
+                const l = line.toLowerCase();
+                return l.includes('present') && l.includes('od') && l.includes('absent');
+            });
+            
+            if (startRowIndex === -1) {
+                showError('Could not find a header with "Present", "OD", and "Absent".');
+                return;
+            }
+
+            const separator = lines[startRowIndex].includes(',') ? ',' : /\t| {2,}/;
+            const headers = lines[startRowIndex].split(separator).map(h => h.trim().toLowerCase().replace(/"/g, ''));
+            const presentIndex = headers.findIndex(h => h.includes('present'));
+            const odIndex = headers.findIndex(h => h === 'od' || h.includes('duty'));
+            const absentIndex = headers.findIndex(h => h.includes('absent'));
+            const subjectIndex = headers.findIndex(h => h === 'subject');
+
+            if ([presentIndex, odIndex, absentIndex, subjectIndex].includes(-1)) {
+                showError('Missing required columns: "Subject", "Present", "OD", "Absent".');
+                return;
+            }
+            
+            const subjectStats = {};
+            for (const line of lines.slice(startRowIndex + 1)) {
+                const row = line.split(separator).map(v => v.trim().replace(/"/g, ''));
+                if (row.length <= Math.max(presentIndex, odIndex, absentIndex, subjectIndex)) continue;
+
+                const subjectName = row[subjectIndex] || "Unknown";
+                const present = parseFloat(row[presentIndex]) || 0;
+                const od = parseFloat(row[odIndex]) || 0;
+                const absent = parseFloat(row[absentIndex]) || 0;
+                
+                if (!subjectStats[subjectName]) subjectStats[subjectName] = { attended: 0, conducted: 0, present: 0, od: 0, absent: 0 };
+                subjectStats[subjectName].attended += present + od;
+                subjectStats[subjectName].conducted += present + od + absent;
+                subjectStats[subjectName].present += present;
+                subjectStats[subjectName].od += od;
+                subjectStats[subjectName].absent += absent;
+            }
+            
+            let totalAttended = 0, totalConducted = 0, totalPresent = 0, totalOD = 0, totalAbsent = 0;
+            Object.values(subjectStats).forEach(s => {
+                totalAttended += s.attended;
+                totalConducted += s.conducted;
+                totalPresent += s.present;
+                totalOD += s.od;
+                totalAbsent += s.absent;
+            });
+            
+            if (totalConducted === 0) {
+                showError('No valid numeric data found.');
+                return;
+            }
+
+            const currentPercent = (totalAttended / totalConducted) * 100;
+            const maxDrop = Math.floor((totalAttended - targetPercentage * totalConducted) / targetPercentage);
+            
+            // Update UI
+            animateValue(DOMElements.totalAttended, totalAttended);
+            animateValue(DOMElements.totalConducted, totalConducted);
+            animateValue(DOMElements.maxDropValue, Math.max(0, maxDrop));
+
+            DOMElements.maxDropDisplay.className = 'max-drop-display'; // Reset classes
+            DOMElements.maxDropDisplay.classList.add(maxDrop >= 0 ? 'max-drop-bg-safe' : 'max-drop-bg-danger');
+            DOMElements.maxDropDisplay.style.setProperty('--shadow-color', maxDrop >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)');
+
+
+            if (maxDrop < 0) {
+                const required = Math.ceil((targetPercentage * totalConducted - totalAttended) / (1 - targetPercentage));
+                showMessage('error', `Below target! Must attend <strong>${required}</strong> more classes.`);
+                showMaxDropOverlay(maxDrop, required);
+            } else {
+                showMessage('success', `You're safely above the target!`);
+                showMaxDropOverlay(maxDrop, 0);
+            }
+            
+            drawOverallDonutChart(totalPresent, totalOD, totalAbsent);
+            drawSubjectBarChart(subjectStats, targetPercentage * 100);
+        };
+        
+        // --- 6. UI Updates & Visualizations ---
+        const animateValue = (el, end) => {
+            const start = parseInt(el.textContent.replace(/,/g, '')) || 0;
+            if (start === end) return;
+            const duration = 800;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = Math.floor(progress * (end - start) + start);
+                el.textContent = current;
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        };
+        
+        const showError = (msg) => {
+            DOMElements.errorMessage.textContent = msg;
+            DOMElements.errorMessage.classList.remove('hidden');
+        };
+        const showMessage = (type, text) => {
+            DOMElements.messageBox.innerHTML = text;
+            DOMElements.messageBox.style.background = type === 'success' ? 'var(--success)' : 'var(--error)';
+            DOMElements.messageBox.style.color = 'white';
+            DOMElements.messageBox.classList.remove('hidden');
+        };
+        const getChartColors = () => {
+            const s = getComputedStyle(document.documentElement);
+            return {
+                textColor: s.getPropertyValue(DOMElements.html.classList.contains('dark') ? '--text-primary-dark' : '--text-primary-light').trim(),
+                gridColor: s.getPropertyValue(DOMElements.html.classList.contains('dark') ? '--border-dark' : '--border-light').trim(),
+                success: s.getPropertyValue('--success').trim(),
+                warning: s.getPropertyValue('--warning').trim(),
+                error: s.getPropertyValue('--error').trim(),
+                background: s.getPropertyValue(DOMElements.html.classList.contains('dark') ? '--bg-secondary-dark' : '--bg-secondary-light').trim(),
+            };
+        };
+        const drawOverallDonutChart = (p, o, a) => {
+            const ctx = document.getElementById('overallDonutChart').getContext('2d');
+            if (chartInstances.overall) chartInstances.overall.destroy();
+            const c = getChartColors();
+            chartInstances.overall = new Chart(ctx, {
+                type: 'doughnut', data: { labels: ['Present', 'OD', 'Absent'], datasets: [{ data: [p, o, a], backgroundColor: [c.success, c.warning, c.error], borderColor: c.background, borderWidth: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: c.textColor, boxWidth: 12, padding: 20 } } } }
+            });
+        };
+        const drawSubjectBarChart = (stats, target) => {
+            const ctx = document.getElementById('subjectBarChart').getContext('2d');
+            if (chartInstances.subject) chartInstances.subject.destroy();
+            const c = getChartColors();
+            const sorted = Object.entries(stats).sort();
+            const labels = sorted.map(([name]) => name.length > 20 ? name.split(' ').map(w=>w[0]).join('') : name);
+            const data = sorted.map(([, d]) => d.conducted > 0 ? (d.attended / d.conducted * 100) : 0);
+            chartInstances.subject = new Chart(ctx, {
+                type: 'bar', data: { labels, datasets: [{ data, backgroundColor: data.map(p => p >= target ? c.success : c.error), borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: c.gridColor }, ticks: { color: c.textColor } }, y: { grid: { display: false }, ticks: { color: c.textColor } } } }
+            });
+        };
+
+        // --- 7. Overlays & Toasts ---
+        const showToast = (message, type = 'success') => {
+            DOMElements.toastMessage.textContent = message;
+            DOMElements.toastIcon.textContent = type === 'success' ? '✅' : '❌';
+            DOMElements.toast.classList.add('show');
+            setTimeout(() => DOMElements.toast.classList.remove('show'), 3000);
+        };
+        const loadLottie = (url) => {
+            const container = document.getElementById('lottie-container');
+            if (lottieAnimation) lottieAnimation.destroy();
+            lottieAnimation = lottie.loadAnimation({ container, renderer: 'svg', loop: true, autoplay: true, path: url });
+        };
+        const showMaxDropOverlay = (maxDrop, required) => {
+            if (sessionStorage.getItem('overlayShown')) return;
+            const title = document.getElementById('overlay-title');
+            const details = document.getElementById('overlay-details');
+            if (maxDrop >= 10) {
+                title.textContent = 'Excellent! 🎉';
+                details.innerHTML = `You have a buffer of <strong>${maxDrop}</strong> classes. Keep it up!`;
+                loadLottie('https://assets7.lottiefiles.com/packages/lf20_jtbfg2nb.json');
+            } else if (maxDrop > 0) {
+                title.textContent = 'On Track! ⚠️';
+                details.innerHTML = `You have <strong>${maxDrop}</strong> skips left. Use them wisely.`;
+                loadLottie('https://assets1.lottiefiles.com/private_files/lf30_hxartdls.json');
+            } else {
+                title.textContent = 'Attendance Alert! 🚨';
+                details.innerHTML = `You're below target. You must attend the next <strong>${required}</strong> classes.`;
+                loadLottie('https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json');
+            }
+            DOMElements.overlay.classList.add('show');
+            sessionStorage.setItem('overlayShown', 'true');
+        };
+
+        // --- 8. Event Listeners ---
+        document.body.addEventListener('click', initAudio, { once: true });
+        
+        DOMElements.pasteBtn.addEventListener('click', () => {
+            navigator.clipboard?.readText().then(text => {
+                if (text) {
+                    DOMElements.dataInput.value = text;
+                    DOMElements.dataInput.classList.remove('hidden');
+                    playSound('click');
+                    showToast('📋 Pasted from clipboard.', 'success');
+                    calculateHours();
+                }
+            }).catch(() => showToast('❌ Could not paste.', 'error'));
+        });
+
+        const allInputs = [DOMElements.targetPercent, DOMElements.dataInput];
+        allInputs.forEach(input => input.addEventListener('input', calculateHours));
+        
+        DOMElements.dropzone.addEventListener('click', () => {
+            playSound('click');
+            DOMElements.fileInput.click()
+        });
+        DOMElements.dropzone.addEventListener('dragover', (e) => e.preventDefault());
+        DOMElements.dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        });
+        DOMElements.fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
+
+        DOMElements.toggleDetailsBtn.addEventListener('click', () => {
+            playSound('click');
+            const isHidden = DOMElements.detailsContainer.classList.toggle('hidden');
+            DOMElements.toggleDetailsBtn.textContent = isHidden ? 'Show Details & Charts' : 'Hide Details & Charts';
+        });
+
+        DOMElements.dismissOverlayBtn.addEventListener('click', () => DOMElements.overlay.classList.remove('show'));
+        
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const ripple = document.createElement('span');
+                const rect = button.getBoundingClientRect();
+                ripple.className = 'ripple';
+                ripple.style.left = `${e.clientX - rect.left}px`;
+                ripple.style.top = `${e.clientY - rect.top}px`;
+                button.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // --- 9. Initialization ---
+        const savedTheme = localStorage.getItem('theme');
+        applyTheme(savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        // This would be where you add the Shepherd.js tour initialization if desired
+    });
+    </script>
+</body>
+</html>

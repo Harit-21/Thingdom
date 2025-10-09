@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale-1.0" />
+    <title>The Attendance Alchemist: A Strategic Calculator — Thingdom</title>
+    <meta name="description" content="Go beyond simple calculation. Our strategic Attendance Alchemist helps you master your schedule, plan for leaves, and understand the real impact of every class you attend or miss." />
+    <meta name="author" content="Thingdom" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: 240 10% 3.9%; --foreground: 0 0% 98%; --primary: 262 83.3% 57.8%;
+            --primary-foreground: 0 0% 100%; --secondary: 222.2 47.4% 11.2%; --muted: 240 5% 25%;
+            --muted-foreground: 240 5% 65%; --accent: 190 95% 55%;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif; font-weight: 500; background-color: hsl(var(--background));
+            color: hsl(var(--foreground)); overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.025; pointer-events: none; z-index: -1;
+        }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+        
+        nav { padding: 1.5rem 0; border-bottom: 1px solid hsl(var(--muted) / 0.5); }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        nav .logo-link { text-decoration: none; color: hsl(var(--foreground)); }
+        nav h4 { font-weight: 600; font-size: 1.25rem; }
+        .text-gradient-primary { background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .page-header { text-align: center; padding: 8rem 0 6rem; }
+        .page-header h1 { font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; color: hsl(var(--primary)); }
+        .page-header p { font-size: 1.25rem; font-weight: 500; color: hsl(var(--muted-foreground)); max-width: 48rem; margin: 0 auto; line-height: 1.7; }
+        
+        .tool-container {
+            background: hsl(var(--secondary) / 0.5);
+            border: 1px solid hsl(var(--muted) / 0.5);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 4rem;
+        }
+        
+        .article-content { padding: 4rem 0; }
+        .article-content h2 { font-size: 2.25rem; color: hsl(var(--accent)); margin-top: 3.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+        .article-content p { font-size: 1.1rem; color: hsl(var(--muted-foreground)); line-height: 1.8; margin-bottom: 1.5rem; }
+        .article-content strong { color: hsl(var(--foreground)); font-weight: 600; }
+        .article-content ul { list-style: none; padding-left: 1rem; margin: 2rem 0;}
+        .article-content li { position: relative; padding-left: 2rem; margin-bottom: 1rem; color: hsl(var(--muted-foreground)); line-height: 1.8;}
+        .article-content li::before { content: '✧'; position: absolute; left: 0; color: hsl(var(--primary)); font-size: 1.5rem; line-height: 1.1; }
+        
+        /* Tool specific styles, adapted for dark theme */
+        label { font-weight: 600; margin-bottom: 0.5rem; color: hsl(var(--muted-foreground)); display: block; }
+        input, select {
+            background: hsl(var(--secondary)); border: 1px solid hsl(var(--muted)); color: hsl(var(--foreground));
+            padding: 0.75rem 1rem; border-radius: 0.5rem; font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 500; transition: all 0.3s; width: 100%;
+        }
+        input:focus, select:focus { outline: none; border-color: hsl(var(--primary)); box-shadow: 0 0 0 3px hsl(var(--primary) / 0.3); }
+        .submit-button {
+            padding: 1rem 2rem; border-radius: 9999px; border: none; font-size: 1rem; font-weight: 600;
+            color: hsl(var(--primary-foreground)); background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            transition: all 0.3s; box-shadow: 0 0 40px hsl(var(--primary) / 0.4); cursor: pointer; width: 100%; margin-top: 1rem;
+        }
+        .submit-button:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 0 60px hsl(var(--primary) / 0.6); }
+        
+        #results { margin-top: 2rem; border-top: 1px solid hsl(var(--muted)); padding-top: 2rem; }
+        #max-drop { font-size: 3rem; font-weight: 800; }
+        .result-card { background: hsl(var(--background)); padding: 1.5rem; border-radius: 1rem; text-align: center; }
+        .result-card-label { font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem; }
+        .result-card-value { font-size: 2rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo-link">
+                <h4><span class="text-gradient-primary">Thing</span>dom</h4>
+            </a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>The Attendance Alchemist</h1>
+            <p class="subtitle">Turn uncertainty into strategy. This isn't just a calculator; it's a tool to master your schedule, understand the true cost of an absence, and plan your semester with confidence.</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="tool-container">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="total-attended">Classes Attended (including OD)</label>
+                        <input type="number" id="total-attended" placeholder="e.g., 75">
+                    </div>
+                    <div>
+                        <label for="total-conducted">Classes Conducted So Far</label>
+                        <input type="number" id="total-conducted" placeholder="e.g., 100">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="target-percent">Your Target Attendance %</label>
+                        <input type="number" id="target-percent" value="75" placeholder="e.g., 75">
+                    </div>
+                </div>
+                <button onclick="calculateAbsences()" class="submit-button">Transmute</button>
+                <div id="results" style="display: none;">
+                     <div class="grid grid-cols-2 gap-4">
+                        <div class="result-card">
+                            <p class="result-card-label">Current %</p>
+                            <p id="current-percent" class="result-card-value">0%</p>
+                        </div>
+                         <div class="result-card">
+                            <p class="result-card-label">Max Absences Allowed</p>
+                            <p id="max-drop" class="result-card-value">0</p>
+                        </div>
+                         <div class="result-card col-span-2" id="message-box" style="display: none;">
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-content">
+                <h2>Beyond the Numbers: The Philosophy of Attendance</h2>
+                <p>For many, attendance is a rigid, unforgiving system. A percentage on a screen dictates your fate. But what if you could treat it not as a restriction, but as a resource? The Attendance Alchemist is built on this philosophy: by understanding the mechanics, you gain control.</p>
+                <p>Knowing you can miss 'X' number of classes isn't about encouraging absenteeism. It's about providing strategic freedom. It's the difference between anxiously guessing and confidently planning. It allows you to make informed decisions about your time, whether that means attending a crucial workshop, taking a much-needed mental health day, or planning a family trip without academic dread.</p>
+
+                <h2>How the Alchemy Works</h2>
+                <p>The calculation seems simple on the surface, but its implications are powerful. It's a formula that balances your past performance with your future obligations. Here’s a breakdown of the core formula:</p>
+                <p><strong>Max Absences = (Total Attended - (Target % * Total Conducted)) / Target %</strong></p>
+                <ul>
+                    <li><strong>Total Attended:</strong> This is your "credit." Every class you've attended (including On-Duty/OD leave) builds up your buffer.</li>
+                    <li><strong>Total Conducted:</strong> This sets the current baseline for your performance.</li>
+                    <li><strong>Target Percentage:</strong> This is the rule of the system you're operating within.</li>
+                </ul>
+                <p>When the result is positive, it represents the number of future classes you can miss entirely while your *existing attendance record* is still strong enough to keep you above the target. When it's negative, the tool calculates the inverse: the number of classes you must attend consecutively to climb back above the threshold.</p>
+                
+                <h2>Strategic Scenarios: Master Your Semester</h2>
+                <p>This tool is more than a calculator; it's a planner. Here's how to use it strategically:</p>
+                <ul>
+                    <li><strong>Pre-Holiday Planning:</strong> Planning a trip? Use the tool *before* you go. See how many classes you can afford to miss. If it's not enough, you know you need to be extra diligent in the weeks leading up to your leave.</li>
+                    <li><strong>Mid-Semester Check-up:</strong> Feeling burnt out? Run the numbers. You might discover you have a 1-2 class buffer for a mental health day without any long-term consequences. This knowledge can be incredibly liberating.</li>
+                    <li><strong>Emergency Preparedness:</strong> Life is unpredictable. Knowing your exact attendance standing at all times means that if an emergency arises, you can immediately assess the academic impact without panic.</li>
+                </ul>
+                <p>By transforming raw numbers into actionable intelligence, you are no longer just a subject of the attendance system—you are its master. You are the alchemist.</p>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Navbar Scroll Logic ---
+            const navbar = document.querySelector('nav');
+            if (navbar) {
+                window.addEventListener('scroll', () => {
+                    navbar.classList.toggle('scrolled', window.scrollY > 50);
+                });
+            }
+            // --- The main calculation function ---
+            window.calculateAbsences = function() {
+                const attended = parseInt(document.getElementById('total-attended').value);
+                const conducted = parseInt(document.getElementById('total-conducted').value);
+                const target = parseInt(document.getElementById('target-percent').value);
+                const resultsEl = document.getElementById('results');
+                const currentPercentEl = document.getElementById('current-percent');
+                const maxDropEl = document.getElementById('max-drop');
+                const messageBoxEl = document.getElementById('message-box');
+
+                if (isNaN(attended) || isNaN(conducted) || isNaN(target) || conducted <= 0 || target <= 0 || target > 100) {
+                    messageBoxEl.style.display = 'block';
+                    messageBoxEl.style.backgroundColor = 'hsl(var(--muted))';
+                    messageBoxEl.style.color = 'hsl(var(--accent))';
+                    messageBoxEl.innerHTML = '<p>Please enter valid numbers in all fields.</p>';
+                    resultsEl.style.display = 'block';
+                    currentPercentEl.textContent = 'N/A';
+                    maxDropEl.textContent = 'N/A';
+                    return;
+                }
+
+                const targetDecimal = target / 100;
+                const currentPercent = (attended / conducted) * 100;
+                
+                const numerator = attended - (targetDecimal * conducted);
+                let maxDrop = 0;
+                let requiredClasses = 0;
+
+                if (numerator >= 0) {
+                    maxDrop = Math.floor(numerator / targetDecimal);
+                } else {
+                    requiredClasses = Math.ceil(Math.abs(numerator) / (1 - targetDecimal));
+                }
+
+                resultsEl.style.display = 'block';
+                currentPercentEl.textContent = `${currentPercent.toFixed(2)}%`;
+                maxDropEl.textContent = maxDrop;
+
+                if (currentPercent < target) {
+                    currentPercentEl.style.color = '#ef4444'; // Red
+                } else {
+                    currentPercentEl.style.color = '#10b981'; // Green
+                }
+
+                if (maxDrop > 0) {
+                    messageBoxEl.style.display = 'block';
+                    messageBoxEl.style.backgroundColor = 'hsla(145, 63%, 42%, 0.2)';
+                    messageBoxEl.style.color = '#34d399';
+                    messageBoxEl.innerHTML = `<p><strong>You're in the clear!</strong> You can afford to miss ${maxDrop} more classes and still meet your target.</p>`;
+                } else {
+                    messageBoxEl.style.display = 'block';
+                    messageBoxEl.style.backgroundColor = 'hsla(0, 72%, 51%, 0.2)';
+                    messageBoxEl.style.color = '#f87171';
+                    messageBoxEl.innerHTML = `<p><strong>Warning!</strong> You must attend the next <strong>${requiredClasses}</strong> classes without absence to reach your target.</p>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

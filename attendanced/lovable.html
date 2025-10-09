@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Drop Calculator</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css" />
+  <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
+
+  <style>
+    /* CSS Variables - Design System */
+    :root {
+      --bg-primary: #f0f4f8;
+      --bg-secondary: #ffffff;
+      --bg-gradient: linear-gradient(180deg, #f0f4f8 0%, #e1e8ed 100%);
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-glow: #60a5fa;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --error: #ef4444;
+      --error-light: #fee2e2;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+      --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --gradient-error: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+      --gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+      --radius: 1rem;
+      --radius-sm: 0.5rem;
+      --radius-lg: 1.5rem;
+      --radius-full: 9999px;
+    }
+
+    .dark {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-gradient: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --border: #334155;
+      --border-light: #1e293b;
+      --success: #34d399;
+      --warning: #facc15;
+      --error: #f87171;
+      --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+      border-radius: var(--radius-full);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: var(--radius-full);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      padding: 2rem 0;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--radius-full);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .theme-toggle svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: var(--text-primary);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: 2rem;
+      box-shadow: var(--shadow-xl);
+      animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .dark .glass-card {
+      background: rgba(30, 41, 59, 0.9);
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .dropzone:hover,
+    .dropzone.drag-over {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.05);
+      transform: scale(1.02);
+    }
+
+    .dropzone-icon {
+      width: 4rem;
+      height: 4rem;
+      margin: 0 auto 1rem;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .dropzone:hover .dropzone-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+      font-family: 'Monaco', monospace;
+      font-size: 0.875rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-icon {
+      width: 3rem;
+      height: 3rem;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      font-size: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-icon:hover {
+      transform: translateY(-3px);
+    }
+
+    .tooltip-btn {
+      position: relative;
+    }
+
+    .tooltip-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translate(-50%, 5px);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .tooltip-btn:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -8px);
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .metric-card {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .metric-card.highlight {
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .progress-container {
+      position: relative;
+      width: 100%;
+      height: 1.5rem;
+      background: var(--border-light);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--gradient-success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.75rem;
+      transition: width 0.5s ease, background 0.5s ease;
+      border-radius: var(--radius-full);
+    }
+
+    .progress-marker {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--error);
+      transition: left 0.5s ease;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    thead {
+      background: var(--border-light);
+    }
+
+    th,
+    td {
+      padding: 1rem;
+      text-align: left;
+    }
+
+    th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: var(--border-light);
+    }
+
+    .percentage-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .badge-high {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .badge-medium {
+      background: var(--warning-light);
+      color: var(--warning);
+    }
+
+    .badge-low {
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--border-light);
+      padding: 0.25rem;
+      border-radius: var(--radius-full);
+    }
+
+    .radio-group input[type="radio"] {
+      display: none;
+    }
+
+    .radio-group label {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      text-align: center;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .radio-group input[type="radio"]:checked+label {
+      background: var(--primary);
+      color: white;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 3rem;
+      height: 1.5rem;
+      background: var(--border);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .toggle-switch.active {
+      background: var(--primary);
+    }
+
+    .toggle-knob {
+      position: absolute;
+      top: 0.125rem;
+      left: 0.125rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toggle-switch.active .toggle-knob {
+      transform: translateX(1.5rem);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .overlay.show {
+      display: flex;
+    }
+
+    .overlay-card {
+      background: var(--bg-secondary);
+      border-radius: 2rem 2rem 0 0;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+      animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: rgba(30, 41, 59, 0.9);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-xl);
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 10000;
+      animation: slideInRight 0.3s ease-out;
+      backdrop-filter: blur(8px);
+    }
+
+    .dark .toast {
+      background: rgba(241, 245, 249, 0.9);
+      color: var(--bg-primary);
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-4 {
+      margin-top: 1rem;
+    }
+
+    .mt-6 {
+      margin-top: 1.5rem;
+    }
+
+    .mt-8 {
+      margin-top: 2rem;
+    }
+
+    .mb-5 {
+      margin-bottom: 1.25rem;
+    }
+
+    .space-y-4>*+* {
+      margin-top: 1rem;
+    }
+
+    .space-y-6>*+* {
+      margin-top: 1.5rem;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .gap-3 {
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 0.5rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .glass-card {
+        padding: 1.5rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    /* Shepherd Tour Custom Styles */
+    .shepherd-element {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .shepherd-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .shepherd-title {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .shepherd-text {
+      padding: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .shepherd-button {
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-weight: 600;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .shepherd-button:hover {
+      background: var(--primary-hover);
+    }
+
+    .shepherd-button.shepherd-button-secondary {
+      background: var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    .shepherd-arrow::before {
+      background-color: var(--bg-secondary);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd"
+          d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a5 5 0 100-10 5 5 0 000 10zm0-1.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM15.25 10a.75.75 0 01-.75-.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM6.25 10a.75.75 0 01-.75-.75H4a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM12.94 12.94a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM7.06 7.06a.75.75 0 010 1.06L6 9.18a.75.75 0 01-1.06-1.06L6 7.06a.75.75 0 011.06 0zM10 18a.75.75 0 01.75-.75v-1.5a.75.75 0 01-1.5 0v1.5A.75.75 0 0110 18zM12.94 7.06a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06L12.94 8.12a.75.75 0 010-1.06zM7.06 12.94a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06z"
+          clip-rule="evenodd" />
+      </svg>
+      <svg id="moon-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+      </svg>
+    </button>
+
+    <header class="header">
+      <h1>Attendance Drop Calculator</h1>
+      <p>Calculate max future absences to stay above your target percentage</p>
+    </header>
+
+    <div class="glass-card">
+      <div class="space-y-6">
+        <div class="dropzone" id="dropzone">
+          <div class="dropzone-icon">📁</div>
+          <p style="font-weight: 600; margin-bottom: 0.5rem;">Drag and drop a CSV/XLSX file here</p>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">or click to select a file</p>
+          <input type="file" id="file-upload" accept=".csv,.xlsx" style="display: none;">
+        </div>
+
+        <div>
+          <label for="target-percent" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">🎯 Target
+            Attendance Percentage</label>
+          <input type="number" id="target-percent" value="65" min="1" max="100">
+        </div>
+
+        <div id="data-input-wrapper" class="hidden">
+          <label for="data-input" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Paste Attendance Data
+            Here</label>
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Include columns for
+            'Subject', 'Present', 'OD', and 'Absent'</p>
+          <div style="position: relative;">
+            <textarea id="data-input" placeholder="Paste your table data here..."></textarea>
+            <button class="btn-icon" id="clear-btn"
+              style="position: absolute; top: 0.5rem; right: 0.5rem; background: transparent; color: var(--error);"
+              title="Clear">🗑️</button>
+          </div>
+        </div>
+
+        <div class="flex gap-3" style="justify-content: center;">
+          <button class="btn-icon tooltip-btn" id="paste-btn" style="background: var(--gradient-primary); color: white;"
+            data-tooltip="Paste from Clipboard">📋</button>
+          <button class="btn-icon tooltip-btn" id="save-btn" style="background: var(--gradient-success); color: white;"
+            data-tooltip="Save Progress">💾</button>
+          <button class="btn-icon tooltip-btn" id="load-btn" style="background: var(--gradient-accent); color: white;"
+            data-tooltip="Resume Last Session">↩️</button>
+        </div>
+
+        <button class="btn btn-primary" id="calculate-btn"
+          style="width: 100%; padding: 1rem; font-size: 1.125rem;">Calculate Max Missable Hours</button>
+      </div>
+
+      <div id="results" class="hidden">
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+
+        <div class="flex" style="justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700;">Results</h2>
+          <button id="toggle-details-btn"
+            style="background: none; border: none; color: var(--primary); cursor: pointer; font-weight: 600;">Show
+            Details</button>
+        </div>
+
+        <div id="error-message" class="hidden"
+          style="padding: 1rem; border-radius: var(--radius); text-align: center; font-weight: 600; background: var(--error-light); color: var(--error); margin-bottom: 1rem;">
+        </div>
+        <div id="message-box" class="hidden"
+          style="padding: 1rem; border-radius: var(--radius); text-align: center; font-weight: 600;"></div>
+
+        <div class="metrics-grid" id="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label" style="color: var(--success);">✅ Total Attended</div>
+            <div class="metric-value" id="total-attended" style="color: var(--success);">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">📚 Total Conducted</div>
+            <div class="metric-value" id="total-conducted">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label" style="color: var(--warning);">📊 Current %</div>
+            <div class="metric-value" id="current-percent" style="color: var(--warning);">0.00%</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">🎯 Max Future Absences</div>
+            <div class="metric-value" id="max-drop">0</div>
+          </div>
+        </div>
+
+        <!-- NEW: Attendance Progress Bar -->
+        <div class="mt-6 mb-5">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Attendance Progress</label>
+          <div class="progress-container">
+            <div class="progress-bar" id="attendance-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+              aria-valuemax="100" style="width: 0%;">0%</div>
+            <div class="progress-marker" id="target-marker" style="left: 65%;"></div>
+          </div>
+          <div class="flex"
+            style="justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+            <span>0%</span>
+            <span style="transform: translateX(-50%); left: 65%;" id="target-marker-label">Target</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+
+        <!-- Custom Attendance Planner -->
+        <div class="mt-6">
+          <label for="custom-attend"
+            style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem;">
+            What if I attend this many future classes?
+          </label>
+          <input type="number" id="custom-attend" placeholder="e.g., 10" min="0">
+          <div id="custom-missable-result"
+            style="color: var(--text-primary); font-weight: 500; margin-top: 0.75rem; font-size: 0.875rem;"
+            class="hidden"></div>
+        </div>
+
+
+        <div id="subject-breakdown-container" class="hidden mt-6">
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">📊 Subject-wise Breakdown</h3>
+          <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg);">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subject Name</th>
+                  <th style="text-align: center;">Attended</th>
+                  <th style="text-align: center;">Conducted</th>
+                  <th style="text-align: center;">Percentage</th>
+                </tr>
+              </thead>
+              <tbody id="subject-breakdown-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="charts-container" class="hidden mt-6">
+          <button id="toggle-charts-btn" class="btn"
+            style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary);">Show
+            Charts</button>
+          <div id="charts-content" class="hidden mt-4"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+            <div class="glass-card" id="subject-chart-container">
+              <h4 style="font-weight: 600; text-align: center;">Attendance by Subject</h4>
+              <div style="position: relative; height: 300px;"><canvas id="subjectBarChart"></canvas></div>
+            </div>
+            <div class="glass-card" id="overall-chart-container">
+              <h4 style="font-weight: 600; text-align: center;">Overall Breakdown</h4>
+              <div style="position: relative; height: 300px;"><canvas id="overallDonutChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <div class="flex" style="justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 1.5rem; font-weight: 700;">📅 Projection & Planner</h2>
+          <button id="toggle-projection-btn"
+            style="background: none; border: none; color: var(--primary); cursor: pointer; font-weight: 600;">Show
+            Planner</button>
+        </div>
+        <div id="projection-container" class="hidden mt-4 space-y-6">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div><label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Duration Type</label><select
+                id="duration-type">
+                <option value="weeks">Weeks</option>
+                <option value="days">Days</option>
+              </select></div>
+            <div><label id="remaining-time-label"
+                style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Remaining Time</label><input
+                type="number" id="remaining-time" value="6" min="1"></div>
+            <div id="classes-per-week-container"><label
+                style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Classes per Week</label><input
+                type="number" id="classes-per-week" value="18" min="1"></div>
+            <div id="days-per-week-container" class="hidden"><label
+                style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Days per Week</label><select
+                id="days-per-week">
+                <option value="6">6 days</option>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+              </select></div>
+          </div>
+          <div id="projection-output" class="hidden"
+            style="background: var(--gradient-primary); color: white; padding: 1.5rem; border-radius: var(--radius-lg);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;"><span>Total Remaining
+                Classes:</span> <strong id="total-remaining-classes">0</strong></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;"><span>Classes You Must
+                Attend:</span> <strong id="required-attendance">0</strong></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;"><span>Classes You Can
+                Skip:</span> <strong id="allowed-skips">0</strong></div>
+            <div
+              style="display: flex; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+              <span>Projected Attendance:</span> <strong id="projected-percent" style="font-size: 1.25rem;">0%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <hr style="margin-bottom: 1.5rem; border: none; border-top: 1px solid var(--border);">
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">⚙️ Preferences</h3>
+        <div class="space-y-4">
+          <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">What would you like on
+              arrival?</label>
+            <div class="radio-group">
+              <input type="radio" name="loadOption" value="resume" id="resume"><label for="resume">Resume Last
+                Save</label>
+              <input type="radio" name="loadOption" value="clipboard" id="clipboard"><label for="clipboard">Paste from
+                Clipboard</label>
+              <input type="radio" name="loadOption" value="none" id="none" checked><label for="none">Do Nothing</label>
+            </div>
+          </div>
+          <div class="flex"
+            style="justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border);">
+            <label style="font-weight: 600;">Show attendance alert popup?</label>
+            <div class="toggle-switch active" id="show-overlay-toggle">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="max-drop-overlay">
+    <div class="overlay-card text-center">
+      <div id="lottie-container" style="width: 120px; height: 120px; margin: 0 auto 1rem;"></div>
+      <h2 id="overlay-title" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;"></h2>
+      <p id="overlay-details" style="color: var(--text-secondary); font-size: 1.125rem; margin-bottom: 1.5rem;"></p>
+      <button class="btn btn-primary" id="dismiss-overlay-btn" style="width: 100%; padding: 1rem;">Got it!</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span id="toast-icon">✅</span>
+    <span id="toast-message"></span>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- UI Element References ---
+      const themeToggle = document.getElementById('theme-toggle');
+      const sunIcon = document.getElementById('sun-icon');
+      const moonIcon = document.getElementById('moon-icon');
+      const dropzone = document.getElementById('dropzone');
+      const fileInput = document.getElementById('file-upload');
+      const dataInput = document.getElementById('data-input');
+      const calculateBtn = document.getElementById('calculate-btn');
+      const pasteBtn = document.getElementById('paste-btn');
+      const saveBtn = document.getElementById('save-btn');
+      const loadBtn = document.getElementById('load-btn');
+      const clearBtn = document.getElementById('clear-btn');
+      const toggleDetailsBtn = document.getElementById('toggle-details-btn');
+      const toggleProjectionBtn = document.getElementById('toggle-projection-btn');
+      const toggleChartsBtn = document.getElementById('toggle-charts-btn');
+      const showOverlayToggle = document.getElementById('show-overlay-toggle');
+      const dismissOverlayBtn = document.getElementById('dismiss-overlay-btn');
+      const customAttendInput = document.getElementById('custom-attend');
+
+      // --- Chart & Animation Instances ---
+      let overallDonutChartInstance = null;
+      let subjectBarChartInstance = null;
+      let lottieAnimation = null;
+
+      // --- 1. THEME MANAGEMENT ---
+      const applyTheme = (isDark) => {
+        document.documentElement.classList.toggle('dark', isDark);
+        sunIcon.classList.toggle('hidden', isDark);
+        moonIcon.classList.toggle('hidden', !isDark);
+        // If results are visible, redraw charts with new theme colors
+        if (document.getElementById('results').checkVisibility()) {
+          calculateHours();
+        }
+      };
+
+      // --- 2. GUIDED TOUR (SHEPHERD.JS) ---
+      const tour = new Shepherd.Tour({
+        useModalOverlay: true,
+        defaultStepOptions: {
+          classes: 'shepherd-element', // Use custom class from your CSS
+          scrollTo: {
+            behavior: 'smooth',
+            block: 'center'
+          }
+        }
+      });
+      tour.addStep({
+        id: 'step-1',
+        text: "Welcome! Drop your CSV or XLSX attendance file here to get started.",
+        attachTo: {
+          element: '#dropzone',
+          on: 'bottom'
+        },
+        buttons: [{
+          text: 'Next',
+          action: tour.next
+        }]
+      });
+      tour.addStep({
+        id: 'step-2',
+        text: "Alternatively, paste your attendance data directly using this button.",
+        attachTo: {
+          element: '#paste-btn',
+          on: 'bottom'
+        },
+        buttons: [{
+          text: 'Back',
+          action: tour.back,
+          secondary: true
+        }, {
+          text: 'Next',
+          action: tour.next
+        }]
+      });
+      tour.addStep({
+        id: 'step-3',
+        text: "Set your minimum required attendance percentage here.",
+        attachTo: {
+          element: '#target-percent',
+          on: 'bottom'
+        },
+        buttons: [{
+          text: 'Back',
+          action: tour.back,
+          secondary: true
+        }, {
+          text: 'Next',
+          action: tour.next
+        }]
+      });
+      tour.addStep({
+        id: 'step-4',
+        text: "Click here to calculate. Your results, including charts and projections, will appear below.",
+        attachTo: {
+          element: '#calculate-btn',
+          on: 'bottom'
+        },
+        buttons: [{
+          text: 'Back',
+          action: tour.back,
+          secondary: true
+        }, {
+          text: 'Next',
+          action: tour.next
+        }]
+      });
+      tour.addStep({
+        id: 'step-5',
+        text: "Key metrics will show up here, showing how many classes you can afford to miss.",
+        attachTo: {
+          element: '#metrics-grid',
+          on: 'bottom'
+        },
+        buttons: [{
+          text: 'Back',
+          action: tour.back,
+          secondary: true
+        }, {
+          text: 'Finish',
+          action: tour.complete
+        }]
+      });
+
+      // --- 3. FILE HANDLING & DATA INPUT ---
+      const handleFile = (file) => {
+        const reader = new FileReader();
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'csv') {
+          reader.onload = (e) => {
+            dataInput.value = e.target.result.trim();
+            sessionStorage.removeItem('overlayShown');
+            calculateHours();
+          };
+          reader.readAsText(file);
+        } else if (ext === 'xlsx') {
+          reader.onload = (e) => {
+            try {
+              const workbook = XLSX.read(new Uint8Array(e.target.result), {
+                type: 'array'
+              });
+              dataInput.value = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]]).trim();
+              sessionStorage.removeItem('overlayShown');
+              calculateHours();
+            } catch (error) {
+              showToast(`❌ Error reading Excel file`, 'error');
+            }
+          };
+          reader.readAsArrayBuffer(file);
+        } else {
+          showToast('❌ Unsupported file type.', 'error');
+        }
+      };
+
+      // --- 4. CORE LOGIC ---
+      const aggregateRawLogData = (allLines) => {
+        const startIndex = allLines.findIndex(line => line.toLowerCase().includes('marked') && line.toLowerCase().includes('number of hours'));
+        if (startIndex === -1) return null;
+
+        const headers = allLines[startIndex].trim().split(/\t| {2,}/).map(h => h.trim().toLowerCase());
+        const markedIndex = headers.indexOf('marked');
+        const hoursIndex = headers.indexOf('number of hours');
+        const subjectIndex = headers.indexOf('subject');
+        if ([markedIndex, hoursIndex, subjectIndex].includes(-1)) return null;
+
+        const subjectStats = {};
+        for (const line of allLines.slice(startIndex + 1)) {
+          const values = line.split(/\t| {2,}/).map(v => v.trim());
+          if (values.length <= Math.max(markedIndex, hoursIndex, subjectIndex)) continue;
+
+          const subject = values[subjectIndex];
+          const marked = values[markedIndex]?.toUpperCase();
+          const hours = parseFloat(values[hoursIndex]) || 0;
+
+          if (!subjectStats[subject]) subjectStats[subject] = {
+            Present: 0,
+            OD: 0,
+            Absent: 0
+          };
+          if (marked === 'P') subjectStats[subject].Present += hours;
+          else if (marked === 'OD') subjectStats[subject].OD += hours;
+          else if (marked === 'A') subjectStats[subject].Absent += hours;
+        }
+
+        const rebuilt = ["#\tSubject\tPresent\tOD\tAbsent"];
+        Object.entries(subjectStats).forEach(([subject, s], i) => {
+          rebuilt.push(`${i + 1}\t${subject}\t${s.Present}\t${s.OD}\t${s.Absent}`);
+        });
+        return rebuilt.join('\n');
+      };
+
+      const calculateHours = () => {
+        const rawData = dataInput.value.trim();
+        if (!rawData) {
+          // Don't show a toast on initial page load, only if they click without data
+          // showToast('📋 Please provide attendance data.', 'info');
+          return;
+        }
+
+        document.getElementById('results').classList.remove('hidden');
+        document.getElementById('error-message').classList.add('hidden');
+        document.getElementById('message-box').classList.add('hidden');
+
+        const targetPercentage = parseFloat(document.getElementById('target-percent').value) / 100;
+        if (isNaN(targetPercentage) || targetPercentage <= 0 || targetPercentage > 1) {
+          showError('Invalid Target Percentage. Must be between 1 and 100.');
+          return;
+        }
+
+        let lines = rawData.split('\n').filter(line => line.trim() !== '');
+        let startRowIndex = lines.findIndex(line => {
+          const l = line.toLowerCase();
+          return l.includes('present') && l.includes('od') && l.includes('absent');
+        });
+
+        if (startRowIndex === -1 && lines.some(l => l.toLowerCase().includes('marked'))) {
+          const aggregated = aggregateRawLogData(lines);
+          if (!aggregated) {
+            showError('Raw data detected, but required columns are missing.');
+            return;
+          }
+          dataInput.value = aggregated;
+          showToast('⚙️ Raw log data auto-formatted.', 'success');
+          setTimeout(calculateHours, 0);
+          return;
+        } else if (startRowIndex === -1) {
+          showError('Could not find a header row with "Present", "OD", and "Absent".');
+          return;
+        }
+
+        const separator = /\t| {2,}/;
+        const headers = lines[startRowIndex].split(separator).map(h => h.trim().toLowerCase().replace(/"/g, ''));
+        const presentIndex = headers.findIndex(h => h.includes('present'));
+        const odIndex = headers.findIndex(h => h === 'od' || h.includes('duty'));
+        const absentIndex = headers.findIndex(h => h.includes('absent'));
+        const subjectIndex = headers.findIndex(h => h === 'subject');
+
+        if ([presentIndex, odIndex, absentIndex, subjectIndex].includes(-1)) {
+          showError('Missing required columns: "Subject", "Present", "OD", "Absent".');
+          return;
+        }
+
+        const subjectStats = {};
+        for (const line of lines.slice(startRowIndex + 1)) {
+          const row = line.split(separator).map(v => v.trim().replace(/"/g, ''));
+          if (row.length <= Math.max(presentIndex, odIndex, absentIndex, subjectIndex)) continue;
+
+          const subjectName = row[subjectIndex] || "Unknown";
+          const attended = (parseFloat(row[presentIndex]) || 0) + (parseFloat(row[odIndex]) || 0);
+          const conducted = attended + (parseFloat(row[absentIndex]) || 0);
+
+          if (conducted > 0) {
+            if (!subjectStats[subjectName]) subjectStats[subjectName] = {
+              attended: 0,
+              conducted: 0,
+              present: 0,
+              od: 0,
+              absent: 0
+            };
+            subjectStats[subjectName].attended += attended;
+            subjectStats[subjectName].conducted += conducted;
+            subjectStats[subjectName].present += parseFloat(row[presentIndex]) || 0;
+            subjectStats[subjectName].od += parseFloat(row[odIndex]) || 0;
+            subjectStats[subjectName].absent += parseFloat(row[absentIndex]) || 0;
+          }
+        }
+
+        let totalAttended = 0,
+          totalConducted = 0,
+          totalPresent = 0,
+          totalOD = 0,
+          totalAbsent = 0;
+        Object.values(subjectStats).forEach(s => {
+          totalAttended += s.attended;
+          totalConducted += s.conducted;
+          totalPresent += s.present;
+          totalOD += s.od;
+          totalAbsent += s.absent;
+        });
+
+        if (totalConducted === 0) {
+          showError('No valid numeric attendance data found.');
+          return;
+        }
+
+        const currentPercent = (totalAttended / totalConducted) * 100;
+        const maxDrop = Math.floor((totalAttended - targetPercentage * totalConducted) / targetPercentage);
+
+        document.getElementById('total-attended').textContent = totalAttended.toFixed(0);
+        document.getElementById('total-conducted').textContent = totalConducted.toFixed(0);
+        document.getElementById('current-percent').textContent = `${currentPercent.toFixed(2)}%`;
+        document.getElementById('max-drop').textContent = Math.max(0, maxDrop).toFixed(0);
+
+        if (maxDrop < 0) {
+          const required = Math.ceil((targetPercentage * totalConducted - totalAttended) / (1 - targetPercentage));
+          showMessage('error', `Below target! You must attend <strong>${required}</strong> more classes consecutively.`);
+          showMaxDropOverlay(maxDrop, required);
+        } else {
+          const newConducted = totalConducted + maxDrop;
+          const resultPercent = (totalAttended / newConducted) * 100;
+          showMessage('success', `If you miss ${maxDrop} more hours, your attendance will become ${resultPercent.toFixed(2)}%.`);
+          showMaxDropOverlay(maxDrop, 0);
+        }
+
+        // --- UPDATE PROGRESS BAR ---
+        const progressBar = document.getElementById('attendance-bar');
+        const marker = document.getElementById('target-marker');
+        const markerLabel = document.getElementById('target-marker-label');
+        progressBar.setAttribute('aria-valuenow', currentPercent.toFixed(1));
+        const targetPercentValue = targetPercentage * 100;
+
+        progressBar.style.width = `${Math.min(currentPercent, 100)}%`;
+        progressBar.textContent = `${currentPercent.toFixed(1)}%`;
+
+        if (currentPercent >= targetPercentValue) {
+          progressBar.style.background = 'var(--gradient-success)';
+        } else {
+          progressBar.style.background = 'var(--gradient-error)';
+        }
+
+        marker.style.left = `${targetPercentValue}%`;
+        markerLabel.style.left = `${targetPercentValue}%`;
+
+
+        // --- Update other UI elements ---
+        displaySubjectBreakdown(subjectStats, targetPercentage * 100);
+        document.getElementById('charts-container').classList.remove('hidden');
+        drawOverallDonutChart(totalPresent, totalOD, totalAbsent);
+        drawSubjectBarChart(subjectStats, targetPercentage * 100);
+        updateProjection(totalAttended, totalConducted, targetPercentage);
+        calculateCustomMissable(); // Recalculate "what if" scenario
+      };
+
+      const updateProjection = (totalAttended, totalConducted, targetPercentage) => {
+        const durationType = document.getElementById('duration-type').value;
+        const remainingTime = parseInt(document.getElementById('remaining-time').value) || 0;
+        const classesPerWeek = parseInt(document.getElementById('classes-per-week').value) || 0;
+        let totalRemainingClasses = 0;
+
+        if (durationType === 'weeks') {
+          totalRemainingClasses = remainingTime * classesPerWeek;
+        } else if (durationType === 'days') {
+          const daysPerWeek = parseInt(document.getElementById('days-per-week').value) || 5;
+          if (daysPerWeek > 0) {
+            const avgClassesPerDay = classesPerWeek / daysPerWeek;
+            totalRemainingClasses = Math.round(remainingTime * avgClassesPerDay);
+          }
+        }
+
+        const projectionOutput = document.getElementById('projection-output');
+        if (remainingTime > 0 && classesPerWeek > 0) {
+          const finalConducted = totalConducted + totalRemainingClasses;
+          const totalRequiredAttendance = Math.ceil(finalConducted * targetPercentage);
+          const classesNeededToAttend = Math.max(0, totalRequiredAttendance - totalAttended);
+          const possibleSkips = Math.max(0, totalRemainingClasses - classesNeededToAttend);
+          const finalAttended = totalAttended + (totalRemainingClasses - possibleSkips);
+          const projectedPercentage = finalConducted > 0 ? (finalAttended / finalConducted * 100) : 0;
+
+          document.getElementById('total-remaining-classes').textContent = totalRemainingClasses;
+          document.getElementById('required-attendance').textContent = classesNeededToAttend;
+          document.getElementById('allowed-skips').textContent = possibleSkips;
+          document.getElementById('projected-percent').textContent = `${projectedPercentage.toFixed(2)}%`;
+          projectionOutput.classList.remove('hidden');
+        } else {
+          projectionOutput.classList.add('hidden');
+        }
+      };
+
+      const calculateCustomMissable = () => {
+        const totalAttended = parseFloat(document.getElementById('total-attended').textContent) || 0;
+        const totalConducted = parseFloat(document.getElementById('total-conducted').textContent) || 0;
+        const outputEl = document.getElementById('custom-missable-result');
+
+        if (isNaN(totalAttended) || isNaN(totalConducted) || totalConducted === 0) {
+          outputEl.classList.add('hidden');
+          return;
+        }
+
+        const targetPercentage = parseFloat(document.getElementById('target-percent').value) / 100;
+        const futureAttend = parseInt(customAttendInput.value) || 0;
+
+        if (futureAttend <= 0) {
+          outputEl.classList.add('hidden');
+          return;
+        }
+
+        const numerator = (totalAttended + futureAttend) - targetPercentage * (totalConducted + futureAttend);
+        const maxSkips = Math.floor(numerator / targetPercentage);
+
+        if (maxSkips < 0) {
+          outputEl.innerHTML = `⚠️ After attending ${futureAttend} more classes, you'll still be below target.`;
+        } else {
+          outputEl.innerHTML = `✅ If you attend <strong>${futureAttend}</strong> more classes, you could then miss <strong>${maxSkips}</strong> classes.`;
+        }
+        outputEl.classList.remove('hidden');
+      };
+
+
+      // --- 5. UI & VISUALIZATION ---
+      const showError = (msg) => {
+        const el = document.getElementById('error-message');
+        el.textContent = msg;
+        el.classList.remove('hidden');
+      };
+      const showMessage = (type, text) => {
+        const box = document.getElementById('message-box');
+        box.innerHTML = text;
+        box.className = 'mt-4 text-center'; // Reset and center
+        if (type === 'success') box.classList.add('badge-high');
+        else if (type === 'error') box.classList.add('badge-low');
+        box.classList.remove('hidden');
+      };
+      const displaySubjectBreakdown = (stats, target) => {
+        const body = document.getElementById('subject-breakdown-body');
+        body.innerHTML = '';
+        Object.entries(stats).sort().forEach(([name, data]) => {
+          if (data.conducted === 0) return;
+          const percent = (data.attended / data.conducted) * 100;
+          const badge = percent >= target ? 'badge-high' : 'badge-low';
+          body.innerHTML += `<tr><td>${name}</td><td class="text-center">${data.attended.toFixed(0)}</td><td class="text-center">${data.conducted.toFixed(0)}</td><td class="text-center"><span class="percentage-badge ${badge}">${percent.toFixed(2)}%</span></td></tr>`;
+        });
+      };
+      const getChartColors = () => {
+        const s = getComputedStyle(document.documentElement);
+        return {
+          textColor: s.getPropertyValue('--text-primary').trim(),
+          gridColor: s.getPropertyValue('--border').trim(),
+          success: s.getPropertyValue('--success').trim(),
+          warning: s.getPropertyValue('--warning').trim(),
+          error: s.getPropertyValue('--error').trim(),
+          background: s.getPropertyValue('--bg-secondary').trim(),
+        };
+      };
+      const drawOverallDonutChart = (p, o, a) => {
+        const ctx = document.getElementById('overallDonutChart').getContext('2d');
+        if (overallDonutChartInstance) overallDonutChartInstance.destroy();
+        const c = getChartColors();
+        overallDonutChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Present', 'OD', 'Absent'],
+            datasets: [{
+              data: [p, o, a],
+              backgroundColor: [c.success, c.warning, c.error],
+              borderColor: c.background,
+              borderWidth: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: c.textColor
+                }
+              }
+            }
+          }
+        });
+      };
+      const drawSubjectBarChart = (stats, target) => {
+        const ctx = document.getElementById('subjectBarChart').getContext('2d');
+        if (subjectBarChartInstance) subjectBarChartInstance.destroy();
+        const c = getChartColors();
+        const sorted = Object.entries(stats).sort();
+        const labels = sorted.map(([name]) => name.length > 15 ? name.split(' ').map(w => w[0]).join('') : name);
+        const data = sorted.map(([, d]) => d.conducted > 0 ? (d.attended / d.conducted * 100) : 0);
+        subjectBarChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: '%',
+              data,
+              backgroundColor: data.map(p => p >= target ? c.success : c.error),
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${sorted[ctx.dataIndex][0]}: ${ctx.parsed.x.toFixed(2)}%`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  color: c.gridColor
+                },
+                ticks: {
+                  color: c.textColor
+                }
+              },
+              y: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  color: c.textColor
+                }
+              }
+            }
+          }
+        });
+      };
+
+      // --- 6. OVERLAY & TOAST ---
+      const showToast = (message, type = 'success') => {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').textContent = message;
+        document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      };
+      const loadLottie = (container, url) => {
+        if (lottieAnimation) lottieAnimation.destroy();
+        container.innerHTML = '';
+        lottieAnimation = lottie.loadAnimation({
+          container,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: url
+        });
+      };
+      const showMaxDropOverlay = (maxDrop, required) => {
+        if (sessionStorage.getItem('overlayShown') || !showOverlayToggle.classList.contains('active')) return;
+        const overlay = document.getElementById('max-drop-overlay');
+        const title = document.getElementById('overlay-title');
+        const details = document.getElementById('overlay-details');
+        const lottie = document.getElementById('lottie-container');
+        if (maxDrop >= 10) {
+          title.textContent = 'Great News! 🎉';
+          details.innerHTML = `You can afford to miss <strong>${maxDrop}</strong> classes. Keep it up!`;
+          loadLottie(lottie, 'https://assets7.lottiefiles.com/packages/lf20_jtbfg2nb.json');
+        } else if (maxDrop > 0) {
+          title.textContent = 'Heads Up ⚠️';
+          details.innerHTML = `Only <strong>${maxDrop}</strong> skips left. Plan wisely.`;
+          loadLottie(lottie, 'https://assets1.lottiefiles.com/private_files/lf30_hxartdls.json');
+        } else {
+          title.textContent = 'No More Skips! 🚨';
+          details.innerHTML = `You're below target. Attend the next <strong>${required}</strong> classes to stay safe.`;
+          loadLottie(lottie, 'https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json');
+        }
+        overlay.classList.add('show');
+        sessionStorage.setItem('overlayShown', 'true');
+      };
+
+      // --- 7. LOCAL STORAGE & PREFERENCES ---
+      const saveProgress = () => {
+        const data = {
+          attendanceData: dataInput.value,
+          targetPercent: document.getElementById('target-percent').value
+        };
+        localStorage.setItem('attendanceProgress', JSON.stringify(data));
+        showToast('💾 Progress saved!', 'success');
+      };
+      const loadProgress = () => {
+        const saved = localStorage.getItem('attendanceProgress');
+        if (!saved) {
+          showToast('🤷 No saved progress found.', 'info');
+          return;
+        }
+        try {
+          const data = JSON.parse(saved);
+          dataInput.value = data.attendanceData || '';
+          document.getElementById('target-percent').value = data.targetPercent || '65';
+          if (data.attendanceData) calculateHours();
+          showToast('↩️ Progress loaded.', 'success');
+        } catch (e) {
+          showToast('❌ Could not load saved data.', 'error');
+        }
+      };
+
+      // --- 8. EVENT LISTENERS ---
+      themeToggle.addEventListener('click', () => {
+        const isDark = !document.documentElement.classList.contains('dark');
+        localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+        applyTheme(isDark);
+      });
+      dropzone.addEventListener('click', () => fileInput.click());
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('drag-over');
+      });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('drag-over');
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+      });
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) handleFile(e.target.files[0]);
+      });
+      calculateBtn.addEventListener('click', calculateHours);
+      pasteBtn.addEventListener('click', () => navigator.clipboard?.readText().then(text => {
+        if (text) {
+          dataInput.value = text;
+          sessionStorage.removeItem('overlayShown');
+          calculateHours();
+          showToast('📋 Pasted.', 'success');
+        }
+      }));
+      saveBtn.addEventListener('click', saveProgress);
+      loadBtn.addEventListener('click', loadProgress);
+      clearBtn.addEventListener('click', () => {
+        dataInput.value = '';
+      });
+      dismissOverlayBtn.addEventListener('click', () => document.getElementById('max-drop-overlay').classList.remove('show'));
+      toggleDetailsBtn.addEventListener('click', () => {
+        const isHidden = document.getElementById('data-input-wrapper').classList.toggle('hidden');
+        document.getElementById('subject-breakdown-container').classList.toggle('hidden', isHidden);
+        toggleDetailsBtn.textContent = isHidden ? 'Show Details' : 'Hide Details';
+      });
+      toggleProjectionBtn.addEventListener('click', () => {
+        const isHidden = document.getElementById('projection-container').classList.toggle('hidden');
+        toggleProjectionBtn.textContent = isHidden ? 'Show Planner' : 'Hide Planner';
+      });
+      toggleChartsBtn.addEventListener('click', () => {
+        const isHidden = document.getElementById('charts-content').classList.toggle('hidden');
+        toggleChartsBtn.textContent = isHidden ? 'Show Charts' : 'Hide Charts';
+      });
+      showOverlayToggle.addEventListener('click', () => {
+        localStorage.setItem('showOverlay', showOverlayToggle.classList.toggle('active') ? 'yes' : 'no');
+      });
+      document.querySelectorAll('input[name="loadOption"]').forEach(r => r.addEventListener('change', () => localStorage.setItem('loadPreference', r.value)));
+      ['target-percent', 'duration-type', 'remaining-time', 'classes-per-week', 'days-per-week'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', calculateHours);
+      });
+      customAttendInput.addEventListener('input', calculateCustomMissable);
+
+
+      // --- 9. INITIALIZATION ---
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedTheme = localStorage.getItem('color-theme');
+      applyTheme(savedTheme ? savedTheme === 'dark' : prefersDark);
+
+      const loadPref = localStorage.getItem('loadPreference') || 'none';
+      document.querySelector(`input[name="loadOption"][value="${loadPref}"]`).checked = true;
+      if (loadPref === 'resume') {
+        loadProgress();
+      } else if (loadPref === 'clipboard') {
+        navigator.clipboard?.readText().then(text => {
+          if (text) {
+            dataInput.value = text;
+            sessionStorage.removeItem('overlayShown');
+            calculateHours();
+            showToast('📋 Pasted from clipboard.', 'success');
+          }
+        });
+      }
+
+      const overlayPref = localStorage.getItem('showOverlay');
+      if (overlayPref === 'no') {
+        showOverlayToggle.classList.remove('active');
+      }
+
+      // Start the tour if it hasn't been completed
+      if (!localStorage.getItem('attendanceAppTourCompleted')) {
+        tour.start();
+      }
+      tour.on('complete', () => localStorage.setItem('attendanceAppTourCompleted', 'true'));
+      tour.on('cancel', () => localStorage.setItem('attendanceAppTourCompleted', 'true'));
+
+    });
+  </script>
+
+</body>
+
+</html>

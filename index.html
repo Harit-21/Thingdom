@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thingdom — A Kingdom of Cool Stuff</title>
-  <link rel="icon" href="/thgd/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
   <meta name="description" content="A collection of smart, fun, and useful things built by one curious mind" />
   <meta name="author" content="Thingdom" />
 
@@ -41,6 +41,11 @@
       --glow-primary: 280 85% 68%;
       --glow-secondary: 190 95% 55%;
       --glow-accent: 330 95% 68%;
+
+      --success: 152 100% 39%;
+      --warning: 42 100% 50%;
+      --info: 210 100% 56%;
+      --resume: 275 100% 60%;
     }
 
     * {
@@ -57,10 +62,12 @@
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
       cursor: none;
+      scroll-behavior: smooth;
     }
 
     html {
       overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
     /* Custom Cursor */
@@ -265,6 +272,23 @@
       }
     }
 
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .bounce {
+      animation: bounce 1s infinite;
+      display: inline-block;
+    }
+
     .animate-float {
       animation: float 8s ease-in-out infinite;
     }
@@ -310,6 +334,11 @@
       align-items: center;
       justify-content: space-between;
       height: 4.5rem;
+    }
+
+    nav .container a {
+      text-decoration: none;
+      color: inherit;
     }
 
     nav h1 {
@@ -661,6 +690,95 @@
       box-shadow: 0 20px 60px hsl(var(--accent) / 0.2);
     }
 
+    /* Success Variant */
+    .project-card-success {
+      border: 1px solid hsl(var(--success) / 0.2);
+    }
+
+    .project-card-success:hover {
+      border-color: hsl(var(--success) / 0.5);
+      box-shadow: 0 20px 60px hsl(var(--success) / 0.2);
+    }
+
+    .project-link-success {
+      color: hsl(var(--success));
+    }
+
+    .glow-success {
+      box-shadow: 0 0 0.75rem hsl(var(--success));
+    }
+
+    .gradient-success {
+      background: linear-gradient(135deg, hsl(var(--success)) 0%, hsl(var(--success) / 0.8) 100%);
+    }
+
+    /* Warning Variant */
+    .project-card-warning {
+      border: 1px solid hsl(var(--warning) / 0.2);
+    }
+
+    .project-card-warning:hover {
+      border-color: hsl(var(--warning) / 0.5);
+      box-shadow: 0 20px 60px hsl(var(--warning) / 0.2);
+    }
+
+    .project-link-warning {
+      color: hsl(var(--warning));
+    }
+
+    .glow-warning {
+      box-shadow: 0 0 0.75rem hsl(var(--warning));
+    }
+
+    .gradient-warning {
+      background: linear-gradient(135deg, hsl(var(--warning)) 0%, hsl(var(--warning) / 0.8) 100%);
+    }
+
+    /* Info Variant */
+    .project-card-info {
+      border: 1px solid hsl(var(--info) / 0.2);
+    }
+
+    .project-card-info:hover {
+      border-color: hsl(var(--info) / 0.5);
+      box-shadow: 0 20px 60px hsl(var(--info) / 0.2);
+    }
+
+    .project-link-info {
+      color: hsl(var(--info));
+    }
+
+    .glow-info {
+      box-shadow: 0 0 0.75rem hsl(var(--info));
+    }
+
+    .gradient-info {
+      background: linear-gradient(135deg, hsl(var(--info)) 0%, hsl(var(--info) / 0.8) 100%);
+    }
+
+    /* Resume Variant */
+    .project-card-resume {
+      border: 1px solid hsl(var(--resume) / 0.2);
+    }
+
+    .project-card-resume:hover {
+      border-color: hsl(var(--resume) / 0.5);
+      box-shadow: 0 20px 60px hsl(var(--resume) / 0.2);
+    }
+
+    .project-link-resume {
+      color: hsl(var(--resume));
+    }
+
+    .glow-resume {
+      box-shadow: 0 0 0.75rem hsl(var(--resume));
+    }
+
+    .gradient-resume {
+      background: linear-gradient(135deg, hsl(var(--resume)) 0%, hsl(var(--resume) / 0.8) 100%);
+    }
+
+
     .project-icon {
       width: 3.5rem;
       height: 3.5rem;
@@ -726,30 +844,103 @@
       height: 1.125rem;
     }
 
-    /* Footer */
+    /* --- Footer --- */
     footer {
       position: relative;
       z-index: 10;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
-      margin-top: 10rem;
-    }
-
-    footer .container {
-      padding: 3rem 1rem;
+      margin-top: 6rem;
+      padding: 6rem 0 3rem;
       text-align: center;
     }
 
-    footer a{
+    .footer-content {
+      margin-bottom: 5rem;
+    }
+
+    .footer-content h3 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-content p {
+      color: hsl(var(--muted-foreground));
+      max-width: 32rem;
+      margin: 0 auto 2.5rem;
+      font-size: 1.125rem;
+      line-height: 1.7;
+    }
+
+    .footer-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.25rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      border: 1px solid hsl(var(--primary) / 0.3);
+      color: hsl(var(--primary-foreground));
+      background: hsl(var(--primary) / 0.1);
+      transition: all 0.3s;
       text-decoration: none;
     }
 
-    footer p {
-      color: hsl(var(--muted-foreground));
-      font-size: 1rem;
+    .footer-button:hover {
+      background: hsl(var(--primary) / 0.2);
+      border-color: hsl(var(--primary) / 0.5);
+      transform: translateY(-4px);
     }
 
-    footer .accent-text {
-      color: hsl(var(--accent));
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 3rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-links a {
+      color: hsl(var(--muted-foreground));
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: hsl(var(--foreground));
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .social-links a {
+      color: hsl(var(--muted-foreground));
+      transition: all 0.3s;
+    }
+
+    .social-links a:hover {
+      color: hsl(var(--primary));
+      transform: translateY(-4px);
+    }
+
+    .social-links svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .copyright {
+      color: hsl(var(--muted-foreground));
+      font-size: 0.875rem;
     }
 
     /* Scroll reveal animations */
@@ -859,9 +1050,11 @@
   <!-- Navbar -->
   <nav class="glass" id="navbar">
     <div class="container">
-      <h1>
-        <span class="text-gradient-primary">Thing</span><span>dom</span>
-      </h1>
+      <a href="/">
+        <h1>
+          <span class="text-gradient-primary">Thing</span><span>dom</span>
+        </h1>
+      </a>
       <button onclick="scrollToProjects()" class="magnetic">
         <span>Projects</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -937,7 +1130,7 @@
             <p>
               Find out how many classes you can skip and still stay above your target attendance percentage.
             </p>
-            <a href="./attendanced/plan-absence.html" class="project-link project-link-primary magnetic">
+            <a href="./attendance-calculator.html" class="project-link project-link-primary magnetic">
               Try It Now
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
@@ -947,6 +1140,113 @@
             </a>
           </div>
         </div>
+
+        <!-- Resume Builder Card -->
+        <div class="project-card-wrapper reveal" style="transition-delay: 0.7s;">
+          <div class="project-card-glow gradient-resume"></div>
+          <div class="project-card project-card-resume glass holographic" data-tilt>
+            <div class="project-icon gradient-resume glow-resume">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4 4h16v16H4z" />
+                <path d="M8 4v16" />
+                <path d="M16 8H8" />
+                <path d="M16 12H8" />
+                <path d="M16 16H8" />
+              </svg>
+            </div>
+            <h4>Resume Guide</h4>
+            <p>
+              Create a polished resume with templates and export options — no design skills needed.
+            </p>
+            <a href="resume-guide.html" class="project-link project-link-resume magnetic">
+              Build Yours
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+
+        <!-- Grade Predictor Tool Card -->
+        <div class="project-card-wrapper reveal" style="transition-delay: 0.4s;">
+          <div class="project-card-glow gradient-success"></div>
+          <div class="project-card project-card-success glass holographic" data-tilt>
+            <div class="project-icon gradient-success glow-success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+              </svg>
+            </div>
+            <h4>Grade Predictor</h4>
+            <p>
+              Estimate the marks you need in upcoming exams to achieve your desired grade or CGPA.
+            </p>
+            <a href="#" class="project-link project-link-success magnetic">
+              Predict Now
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- GPA Calculator Card -->
+        <div class="project-card-wrapper reveal" style="transition-delay: 0.5s;">
+          <div class="project-card-glow gradient-warning"></div>
+          <div class="project-card project-card-warning glass holographic" data-tilt>
+            <div class="project-icon gradient-warning glow-warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4 6h16M4 10h16M4 14h10M4 18h6"></path>
+              </svg>
+            </div>
+            <h4>GPA Calculator</h4>
+            <p>
+              Enter your grades and credit hours to instantly calculate your GPA for any semester.
+            </p>
+            <a href="./gpa-calculator/index.html" class="project-link project-link-warning magnetic">
+              Calculate GPA
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Unit Converter Card -->
+        <div class="project-card-wrapper reveal" style="transition-delay: 0.6s;">
+          <div class="project-card-glow gradient-info"></div>
+          <div class="project-card project-card-info glass holographic" data-tilt>
+            <div class="project-icon gradient-info glow-info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4 21h4M4 3h4M16 17l5-5-5-5M9 17l-5-5 5-5"></path>
+              </svg>
+            </div>
+            <h4>Unit Converter</h4>
+            <p>
+              Convert between metric and imperial units for length, weight, temperature, and more.
+            </p>
+            <a href="./unit-converter/index.html" class="project-link project-link-info magnetic">
+              Convert Units
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
 
         <!-- Coming Soon Card -->
         <div class="project-card-wrapper reveal" style="transition-delay: 0.2s;">
@@ -991,7 +1291,7 @@
               Like a GPA calculator, unit converter, code playground... whatever you're cooking.
             </p>
             <div class="project-link project-link-accent">
-              <span style="animation: glow 2s infinite;">🚀</span>
+              <span style="animation: bounce 1s infinite;">🚀</span>
               Ideas Welcome
             </div>
           </div>
@@ -1001,7 +1301,7 @@
   </section>
 
   <!-- Footer -->
-  <footer>
+  <!-- <footer>
     <div class="container">
       <a href="https://harit-21.web.app">
         <p>
@@ -1009,6 +1309,53 @@
             class="accent-text">❤️</span> and ideas from boring lectures.
         </p>
       </a>
+    </div>
+  </footer> -->
+
+  <footer>
+    <div class="container">
+      <div class="footer-content reveal">
+        <h3>Have a <span class="text-gradient-primary">Thing</span> in mind?</h3>
+        <p>Let's build something cool together. Reach out and share your ideas!</p>
+        <a href="mailto:hello@thingdom.com" class="footer-button magnetic">
+          Get In Touch
+        </a>
+      </div>
+      <div class="footer-bottom reveal">
+        <div class="footer-links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="contact.html">Contact Us</a>
+        </div>
+        <div class="social-links">
+          <a href="#" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z">
+              </path>
+            </svg>
+          </a>
+          <a href="#" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.1.39-1.99 1.03-2.69a3.6 3.6 0 0 1 .1-2.64s.84-.27 2.75 1.02a9.58 9.58 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.4.1 2.64.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.72c0 .27.18.58.69.48A10 10 0 0 0 22 12 10 10 0 0 0 12 2Z">
+              </path>
+            </svg>
+          </a>
+          <a href="#" aria-label="Dribbble">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12zm-2.81-16.485c.997.014 1.89.333 2.67.957-3.354 1.62-5.74 4.44-6.82 7.733-.51-1.55-.42-3.21.26-4.755 1.05-2.38 3.09-4.24 5.56-4.935l-.67.002zm5.79 1.96c-1.35-1.32-3.2-2.11-5.12-2.11-.27 0-.54.01-.8.04 3.79 1.14 6.51 3.93 7.66 7.3.36-1.54.12-3.17-.74-4.63v.01zM8.19 19.31c2.16.96 4.6.93 6.73-.08-1.06 1.48-2.73 2.51-4.62 2.82-.63.09-1.26.1-1.88.02-.08 0-.15-.01-.23-.02v.01z">
+              </path>
+            </svg>
+          </a>
+        </div>
+        <p class="copyright">© 2025 <span class="text-gradient-primary" style="font-weight: 700;">Thingdom</span> — All
+          Rights Reserved.</p>
+        <p class="copyright">
+          Built with <span class="accent-text">❤️</span> and ideas from boring lectures.
+        </p>
+      </div>
     </div>
   </footer>
 

@@ -84,37 +84,16 @@
 
     /* Replace your existing body style */
     body {
-      /* font-family: 'Inter', sans-serif; */
+      font-family: 'Inter', sans-serif;
       /* Light Mode Gradient */
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      /* transition: background 0.5s ease; */
+      transition: background 0.5s ease;
     }
 
+    /* Dark Mode styles */
     .dark body {
-      font-family: 'Inter', sans-serif;
-      background: hsl(240 20% 5%);
-      /* --background from Thingdom */
-      color: hsl(0 0% 98%);
-      /* --foreground from Thingdom */
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-      cursor: none;
-      /* We will add the custom cursor */
-    }
-
-    .dark body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      opacity: 0.03;
-      pointer-events: none;
-      z-index: -1;
-      /* Place it behind content */
+      /* Dark Mode Gradient */
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
     }
 
     /* Replace your existing .card style */
@@ -129,6 +108,12 @@
       transition: background 0.3s ease, border 0.3s ease;
     }
 
+    .dark .card {
+      background: var(--glass-bg-dark);
+      border: 1px solid var(--glass-border-dark);
+      box-shadow: 0 8px 32px 10px rgba(22, 138, 255, 0.65);
+    }
+
     /* Add this new style to your <style> block */
     .gradient-text {
       background: linear-gradient(45deg, #3b82f6, #8b5cf6);
@@ -136,6 +121,12 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-fill-color: transparent;
+    }
+
+    .dark .gradient-text {
+      background: linear-gradient(45deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
     }
 
     textarea {
@@ -298,6 +289,16 @@
       transition: all 0.2s ease-in-out;
     }
 
+    .dark input[type="number"],
+    .dark input[type="file"],
+    .dark select,
+    .dark textarea {
+      background: rgba(55, 65, 81, 0.5);
+      border-color: rgba(107, 114, 128, 0.5);
+      color: #f9fafb;
+      /* White text for dark mode inputs */
+    }
+
     input:focus,
     select:focus,
     textarea:focus {
@@ -440,116 +441,10 @@
     .glow-danger {
       box-shadow: 0 -10px 50px -15px rgba(239, 68, 68, 0.5);
     }
-
-    /* ADD this new class */
-    .glass {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Remove background from the original card in dark mode */
-    .dark .card {
-      background: transparent;
-      /* This will let the glass effect show */
-      border: 1px solid var(--glass-border-dark);
-      border-color: transparent;
-      box-shadow: 0 8px 32px 10px rgba(124, 58, 237, 0.3);
-    }
-
-    .dark .gradient-text {
-      background: linear-gradient(135deg, hsl(280 85% 68%), hsl(190 95% 55%));
-      -webkit-background-clip: text;
-      background-clip: text;
-      animation: gradient-shift 6s ease infinite;
-      background-size: 200% 200%;
-    }
-
-    @keyframes gradient-shift {
-
-      0%,
-      100% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-    }
-
-    .dark .calculate-btn {
-      background: linear-gradient(135deg, hsl(280 85% 68%), hsl(260 90% 58%));
-      box-shadow: 0 0 40px hsl(280 85% 68% / 0.4);
-    }
-
-    .dark .calculate-btn:hover {
-      box-shadow: 0 0 50px hsl(280 85% 68% / 0.6);
-    }
-
-    .dark input[type="number"],
-    .dark input[type="file"],
-    .dark select,
-    .dark textarea {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.15);
-      color: #f9fafb;
-    }
-
-    .dark input:focus,
-    .dark select:focus,
-    .dark textarea:focus {
-      box-shadow: 0 0 0 3px hsl(280 85% 68% / 0.4);
-      border-color: hsl(280 85% 68%) !important;
-    }
-
-    /* ADD these cursor styles */
-    .cursor {
-      width: 20px;
-      height: 20px;
-      border: 2px solid hsl(280 85% 68%);
-      /* --primary color */
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      transition: all 0.1s ease;
-      transform: translate(-50%, -50%);
-      mix-blend-mode: difference;
-    }
-
-    .cursor-glow {
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, hsl(280 85% 68% / 0.15), transparent 70%);
-      position: fixed;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: all 0.3s ease;
-    }
-
-    .cursor.active {
-      transform: translate(-50%, -50%) scale(1.5);
-      background: hsl(280 85% 68% / 0.3);
-    }
   </style>
 </head>
 
 <body class="py-4 px-1 sm:p-8 bg-gray-50 dark:bg-gray-900">
-  <div class="cursor"></div>
-  <div class="cursor-glow"></div>
-  <div class="blob-wrapper fixed top-0 left-0 w-full h-full pointer-events-none z-[-1] overflow-hidden">
-    <div class="blob absolute top-[10%] left-[-10%] w-[30rem] h-[30rem] rounded-full filter blur-[140px] opacity-25"
-      style="background: linear-gradient(135deg, hsl(280 85% 68%), hsl(260 90% 58%)); animation: float 8s ease-in-out infinite;">
-    </div>
-    <div class="blob absolute top-[40%] right-[-10%] w-[35rem] h-[35rem] rounded-full filter blur-[140px] opacity-25"
-      style="background: linear-gradient(135deg, hsl(190 95% 55%), hsl(170 90% 60%)); animation: float 8s ease-in-out infinite 2s;">
-    </div>
-    <div class="blob absolute bottom-[10%] left-[30%] w-[28rem] h-[28rem] rounded-full filter blur-[140px] opacity-25"
-      style="background: linear-gradient(135deg, hsl(330 95% 68%), hsl(310 90% 58%)); animation: float 8s ease-in-out infinite 4s;">
-    </div>
-  </div>
 
   <div id="sticky-message-bar" class="fixed top-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 hidden">
     <div id="sticky-message-content"
@@ -578,7 +473,7 @@
         </svg>
       </button>
     </div>
-    <div class="card bg-white dark:glass py-6 px-3 sm:p-8 rounded-xl border border-gray-200"
+    <div class="card bg-white py-6 px-3 sm:p-8 rounded-xl border border-gray-200"
       style="animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);">
       <!-- Instructions and Inputs -->
       <div class="space-y-6">
@@ -1068,34 +963,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
   <script>
-
-    const cursor = document.querySelector('.cursor');
-    const cursorGlow = document.querySelector('.cursor-glow');
-    let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-    function animateCursor() {
-      const speed = 0.15;
-      cursorX += (mouseX - cursorX) * speed;
-      cursorY += (mouseY - cursorY) * speed;
-      if (cursor) {
-        cursor.style.left = cursorX + 'px';
-        cursor.style.top = cursorY + 'px';
-      }
-      if (cursorGlow) {
-        cursorGlow.style.left = cursorX + 'px';
-        cursorGlow.style.top = cursorY + 'px';
-      }
-      requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
-    document.querySelectorAll('button, a, input, select, [data-tooltip]').forEach(el => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-    });
-
     document.addEventListener('DOMContentLoaded', () => {
       const tour = new Shepherd.Tour({
         useModalOverlay: true, // This darkens the background

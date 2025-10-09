@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Damn Great Resume Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hero-bg {
+            background-color: #1a202c;
+            background-image: radial-gradient(circle at 1px 1px, #374151 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+
+        .before-after-toggle {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .before-after-toggle .content {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .code-block {
+            font-family: 'Fira Code', 'Courier New', monospace;
+        }
+
+        /* Simple Syntax Highlighting */
+        .code-block .token.comment { color: #9ca3af; }
+        .code-block .token.keyword { color: #c084fc; }
+        .code-block .token.string { color: #a5b4fc; }
+        .code-block .token.function { color: #67e8f9; }
+        .code-block .token.number { color: #f9a8d4; }
+        .code-block .token.decorator { color: #fde047; }
+    </style>
+</head>
+
+<body class="text-gray-800 antialiased">
+
+    <div class="flex flex-col lg:flex-row">
+
+        <aside
+            class="w-full lg:w-1/4 xl:w-1/5 p-8 bg-gray-900 text-white lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+            <h2 class="text-2xl font-bold text-indigo-400 mb-8">Navigation</h2>
+            <nav>
+                <ul class="space-y-4">
+                    <li><a href="#philosophy"
+                            class="group flex items-center space-x-3 text-lg hover:text-indigo-400 transition-colors duration-300">
+                            <span
+                                class="w-2 h-2 bg-indigo-500 rounded-full group-hover:bg-indigo-400 transition-colors duration-300"></span>
+                            <span class="group-hover:text-indigo-400">Core Philosophy</span>
+                        </a></li>
+                    <li><a href="#anatomy"
+                            class="group flex items-center space-x-3 text-lg hover:text-indigo-400 transition-colors duration-300">
+                            <span
+                                class="w-2 h-2 bg-indigo-500 rounded-full group-hover:bg-indigo-400 transition-colors duration-300"></span>
+                            <span class="group-hover:text-indigo-400">Anatomy of a Killer Resume</span>
+                        </a></li>
+                    <ul class="pl-8 space-y-3 pt-2 text-gray-400">
+                        <li><a href="#anatomy-header" class="hover:text-white transition-colors">Header</a></li>
+                        <li><a href="#anatomy-summary" class="hover:text-white transition-colors">Summary</a></li>
+                        <li><a href="#anatomy-skills" class="hover:text-white transition-colors">Skills</a></li>
+                        <li><a href="#anatomy-experience" class="hover:text-white transition-colors">Experience</a></li>
+                        <li><a href="#anatomy-projects" class="hover:text-white transition-colors">Projects</a></li>
+                        <li><a href="#anatomy-education" class="hover:text-white transition-colors">Education</a></li>
+                    </ul>
+                    <li><a href="#design"
+                            class="group flex items-center space-x-3 text-lg hover:text-indigo-400 transition-colors duration-300">
+                            <span
+                                class="w-2 h-2 bg-indigo-500 rounded-full group-hover:bg-indigo-400 transition-colors duration-300"></span>
+                            <span class="group-hover:text-indigo-400">Design & Formatting</span>
+                        </a></li>
+                    <li><a href="#polish"
+                            class="group flex items-center space-x-3 text-lg hover:text-indigo-400 transition-colors duration-300">
+                            <span
+                                class="w-2 h-2 bg-indigo-500 rounded-full group-hover:bg-indigo-400 transition-colors duration-300"></span>
+                            <span class="group-hover:text-indigo-400">The Final Polish</span>
+                        </a></li>
+                </ul>
+            </nav>
+            <div class="mt-12 pt-8 border-t border-gray-700">
+                <p class="text-gray-400 text-sm">A guide by Thingdoms. Designed to help you build a resume that opens
+                    doors.</p>
+            </div>
+        </aside>
+
+        <main class="w-full lg:w-3/4 xl:w-4/5">
+
+            <header class="hero-bg text-white p-12 md:p-20 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">The Damn Great Resume Guide</h1>
+                <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+                    This isn't a list of chores. It's a marketing document. Learn to build a resume that convinces a
+                    busy recruiter, in under 10 seconds, that you are the solution to their problem.
+                </p>
+            </header>
+
+            <div class="p-8 md:p-12 space-y-16">
+
+                <section id="philosophy">
+                    <h2 class="text-3xl font-bold mb-6 border-l-4 border-indigo-500 pl-4">Core Philosophy: The Mindset
+                    </h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div
+                            class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
+                            <h3 class="text-xl font-semibold text-indigo-600 mb-2">1. The One-Page Rule</h3>
+                            <p>Unless you have 10+ years of highly relevant experience, your resume is one page. Full
+                                stop. It forces clarity and values every word.</p>
+                        </div>
+                        <div
+                            class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
+                            <h3 class="text-xl font-semibold text-indigo-600 mb-2">2. The Recruiter is Your Audience
+                            </h3>
+                            <p>They are busy. Your resume must be scannable, clean, and immediately communicate your
+                                value. They are not reading a novel.</p>
+                        </div>
+                        <div
+                            class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-1">
+                            <h3 class="text-xl font-semibold text-indigo-600 mb-2">3. Tailor Everything, Always</h3>
+                            <p>A generic resume is a dead resume. Tweak your resume for every job description. This is
+                                the single most important thing you can do.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="anatomy">
+                    <h2 class="text-3xl font-bold mb-8 border-l-4 border-indigo-500 pl-4">Anatomy of a Killer Resume
+                    </h2>
+
+                    <div class="space-y-12">
+                        <div id="anatomy-header" class="bg-white p-6 rounded-xl shadow-lg"></div>
+                        <div id="anatomy-summary" class="bg-white p-6 rounded-xl shadow-lg"></div>
+                        <div id="anatomy-skills" class="bg-white p-6 rounded-xl shadow-lg"></div>
+                        <div id="anatomy-experience" class="bg-white p-6 rounded-xl shadow-lg"></div>
+                        <div id="anatomy-projects" class="bg-white p-6 rounded-xl shadow-lg"></div>
+                        <div id="anatomy-education" class="bg-white p-6 rounded-xl shadow-lg"></div>
+                    </div>
+                </section>
+
+                <section id="design">
+                    <h2 class="text-3xl font-bold mb-6 border-l-4 border-indigo-500 pl-4">Design & Formatting</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <ul class="space-y-4 text-lg">
+                            <li class="flex items-start"><span class="text-indigo-500 font-bold mr-3">✓</span>
+                                <div><strong class="font-semibold">Font:</strong> Use a professional pair. A serif like
+                                    Garamond for headers and a sans-serif like Calibri for body text is a classic,
+                                    powerful choice.</div>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-500 font-bold mr-3">✓</span>
+                                <div><strong class="font-semibold">Whitespace:</strong> Don't cram everything. Use
+                                    adequate margins and spacing to make the document easy to read and feel uncluttered.
+                                </div>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-500 font-bold mr-3">✓</span>
+                                <div><strong class="font-semibold">Consistency:</strong> Use the same formatting for
+                                    dates, locations, and titles throughout. Consistency is a hallmark of
+                                    professionalism.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="polish">
+                    <h2 class="text-3xl font-bold mb-6 border-l-4 border-indigo-500 pl-4">The Final Polish</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <ul class="space-y-4 text-lg">
+                            <li class="flex items-start"><span class="text-indigo-500 font-bold mr-3">1.</span>
+                                <div><strong class="font-semibold">Proofread. Then Proofread Again.</strong> A single
+                                    typo can get your resume thrown out. Read it out loud. Use a grammar checker.</div>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-500 font-bold mr-3">2.</span>
+                                <div><strong class="font-semibold">Export to PDF.</strong> Always submit as a PDF to
+                                    preserve formatting. Name it professionally: `FirstLast_Resume.pdf`.</div>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-500 font-bold mr-3">3.</span>
+                                <div><strong class="font-semibold">Get Feedback.</strong> A fresh pair of eyes will
+                                    always catch something you missed. Ask a friend, mentor, or career services
+                                    professional.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="generator">
+                    <h2 class="text-3xl font-bold mb-6 border-l-4 border-green-500 pl-4">The Resume Generator: Bring it
+                        to Life</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <p class="text-lg mb-6">This is the Python script that builds the professional, one-page resume
+                            described in this guide. Simply copy the code, edit the <code
+                                class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">resume_data</code> dictionary
+                            with your own information, and run the script to generate your personal `.docx` file.</p>
+
+                        <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+                            <div class="flex justify-between items-center px-4 py-2 bg-gray-700">
+                                <span class="text-gray-300 text-sm font-medium">resume_generator.py</span>
+                                <button id="copy-button"
+                                    class="bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold py-1 px-3 rounded-md transition-colors">
+                                    Copy Code
+                                </button>
+                            </div>
+                            <pre
+                                class="p-4 text-sm text-white overflow-x-auto"><code id="code-block" class="code-block language-python"></code></pre>
+                        </div>
+
+                        <div class="mt-8">
+                            <h3 class="text-2xl font-semibold mb-4">How to Use</h3>
+                            <div class="grid md:grid-cols-2 gap-4 text-base">
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <p><strong class="font-semibold text-indigo-600">1. Install Library:</strong> Open
+                                        your terminal and run:</p>
+                                    <code
+                                        class="block bg-gray-200 text-gray-800 p-2 rounded mt-2 text-sm">pip install python-docx</code>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <p><strong class="font-semibold text-indigo-600">2. Save the Code:</strong> Save the
+                                        script as a Python file, for example, <code
+                                            class="bg-gray-200 px-1 rounded">resume_generator.py</code>.</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <p><strong class="font-semibold text-indigo-600">3. Edit Your Data:</strong> Open
+                                        the file and fill in the <code
+                                            class="bg-yellow-100 text-yellow-800 px-1 rounded">resume_data</code>
+                                        section with your own details.</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <p><strong class="font-semibold text-indigo-600">4. Run the Script:</strong> Open
+                                        your terminal in the same folder and run:</p>
+                                    <code
+                                        class="block bg-gray-200 text-gray-800 p-2 rounded mt-2 text-sm">python resume_generator.py</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Content for Anatomy Sections ---
+            const sections = {
+                'anatomy-header': {
+                    title: '1. The Header: Your Digital Handshake',
+                    content: `This isn't just your name; it's your brand. Make it the largest text. Add a professional tagline (e.g., 'Software Engineer | Product Builder'). Include essential, clickable links for Email, LinkedIn, and GitHub.`
+                },
+                'anatomy-summary': {
+                    title: '2. The Professional Summary: The Hook',
+                    content: `This 2-3 sentence elevator pitch replaces the outdated 'Objective'. Its job is to grab attention and make them want to read more. Focus on your value proposition.`,
+                    before: 'I am a hardworking computer science student looking for an entry-level software engineering role.',
+                    after: 'Innovative Computer Science professional with hands-on experience in the full software development lifecycle (SDLC). A proactive problem-solver with a track record of building scalable, user-centric applications using agile methodologies.'
+                },
+                'anatomy-skills': {
+                    title: '3. Core Competencies / Skills: The Keyword Goldmine',
+                    content: `This section is for both automated systems (ATS) and the scanning human eye. Group your skills logically (Languages, Frameworks, Tools) and use a clean, scannable format like a grid.`
+                },
+                'anatomy-experience': {
+                    title: '4. Professional Experience: The Heart of Your Story',
+                    content: `This is where you prove you can do the job. Do not list your duties. Showcase your achievements. Every bullet point should scream "I made things better." Use the STAR method (Situation, Task, Action, Result) and quantify everything.`,
+                    before: 'Wrote code for the company\'s e-commerce platform.\n- Fixed bugs.\n- Responsible for building the front-end.',
+                    after: 'Overhauled the checkout process on a high-traffic e-commerce platform by implementing a new React component, which decreased cart abandonment by 15% in the first quarter.\n- Reduced production bugs by 40% by implementing a comprehensive testing suite using Jest & Cypress.\n- Engineered a responsive UI using React and CSS Grid, resulting in a 25% improvement in user session duration.'
+                },
+                'anatomy-projects': {
+                    title: '5. Projects: Your Passion and Proof',
+                    content: `For students or early-career professionals, this section is as important as experience. It shows initiative and practical skills. Apply the same STAR method here. Explain the problem, the tech stack, and link to the code.`
+                },
+                'anatomy-education': {
+                    title: '6. Education: Short and Sweet',
+                    content: `Keep it simple: Degree, Institution, Location, and Date. Add one or two key details like 'Dean's List' or 'Relevant Coursework' if you're a recent graduate.`
+                }
+            };
+
+            // --- Function to Create "Good vs. Great" Toggle ---
+            function createToggle(before, after) {
+                const id = `toggle-${Math.random().toString(36).substr(2, 9)}`;
+                return `
+                <div class="mt-4 border-t pt-4">
+                    <div class="flex items-center justify-end mb-2">
+                        <span class="text-sm font-medium text-gray-500 mr-3">Good</span>
+                        <label for="${id}" class="inline-flex relative items-center cursor-pointer">
+                            <input type="checkbox" id="${id}" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                        <span class="text-sm font-medium text-indigo-600 ml-3">Great!</span>
+                    </div>
+                    <div class="before-after-toggle p-4 rounded-lg bg-gray-50 border">
+                        <div class="content before whitespace-pre-line text-gray-600">${before}</div>
+                        <div class="content after whitespace-pre-line text-indigo-800 hidden opacity-0 transform -translate-y-2">${after}</div>
+                    </div>
+                </div>
+                `;
+            }
+
+            // --- Populate Anatomy Sections ---
+            for (const [id, data] of Object.entries(sections)) {
+                const container = document.getElementById(id);
+                if (container) {
+                    let html = `<h3 class="text-2xl font-semibold mb-3">${data.title}</h3><p class="text-lg">${data.content}</p>`;
+                    if (data.before && data.after) {
+                        html += createToggle(data.before, data.after);
+                    }
+                    container.innerHTML = html;
+                }
+            }
+
+            // --- Add Event Listeners to Toggles ---
+            document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
+                toggle.addEventListener('change', function () {
+                    const parent = this.closest('.border-t');
+                    const beforeContent = parent.querySelector('.before');
+                    const afterContent = parent.querySelector('.after');
+
+                    if (this.checked) {
+                        beforeContent.classList.add('hidden', 'opacity-0');
+                        afterContent.classList.remove('hidden');
+                        setTimeout(() => {
+                            afterContent.classList.remove('opacity-0', '-translate-y-2');
+                        }, 10);
+                    } else {
+                        afterContent.classList.add('opacity-0', '-translate-y-2');
+                        setTimeout(() => {
+                            afterContent.classList.add('hidden');
+                            beforeContent.classList.remove('hidden');
+                            setTimeout(() => {
+                                beforeContent.classList.remove('opacity-0');
+                            }, 10);
+                        }, 300);
+                    }
+                });
+            });
+
+            // --- CORRECTED & COMPLETE Python Code for the Generator ---
+            const pythonCode = `
+# Ensure you have the library: pip install python-docx
+
+from docx import Document
+from docx.shared import Pt, Inches, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+# ==============================================================================
+#  ✅ EDIT THIS SECTION TO CUSTOMIZE YOUR RESUME ✅
+# ==============================================================================
+resume_data = {
+    # --- Personal Information ---
+    "name": "ALEXANDER CHEN",
+    "tagline": "Software Engineer | Product Builder | AI Enthusiast",
+    "email": "alex.chen@email.com",
+    "phone": "+1 (555) 123-4567",
+    "location": "San Francisco, CA",
+    "linkedin": "linkedin.com/in/alexchen-dev",
+    "github": "github.com/alexchen",
+    "portfolio": "alexchen.dev",
+    
+    # --- Professional Summary ---
+    "summary": "Innovative Software Engineer with 4+ years of experience in the full software development lifecycle (SDLC), from concept through to deployment. A proactive problem-solver with a proven track record of building scalable, user-centric web applications and RESTful APIs using agile methodologies. Passionate about leveraging new technologies to create efficient and impactful solutions.",
+    
+    # --- Core Competencies ---
+    "core_competencies": [
+        "Python (Django, Flask)", "JavaScript (React, Node.js)", "Database Architecture (PostgreSQL, MongoDB)",
+        "Cloud Services (AWS, Docker)", "Agile & Scrum Methodologies", "CI/CD & DevOps Practices"
+    ],
+    
+    # --- Professional Experience ---
+    "experience": [
+        {
+            "title": "Software Engineer",
+            "company": "Innovatech Solutions Inc.",
+            "location": "San Francisco, CA",
+            "date": "July 2023 – Present",
+            "details": [
+                'Overhauled the main product’s data processing pipeline using Python and Celery, reducing report generation time by 60% and supporting a 3x increase in data volume.',
+                'Engineered and launched a new client-facing REST API with Node.js and Express, which now serves over 1 million requests per day and increased partner integration capabilities by 40%.',
+                'Mentored two junior engineers, providing code reviews and guidance that improved team-wide code quality and adherence to best practices.'
+            ]
+        },
+        {
+            "title": "Junior Developer",
+            "company": "Digital Creations Co.",
+            "location": "Palo Alto, CA",
+            "date": "June 2021 – July 2023",
+            "details": [
+                'Developed and maintained 5+ responsive client websites using React, resulting in an average 15% increase in user engagement metrics.',
+                'Collaborated in an Agile team to refactor a legacy monolithic application into a microservices architecture, improving system scalability and reducing deployment times by 25%.',
+                'Implemented a comprehensive testing suite with Jest and Cypress, increasing test coverage from 30% to 85% and decreasing critical production bugs by 50%.'
+            ]
+        }
+    ],
+
+    # --- Projects ---
+     "projects": [
+        {
+            "title": "AI-Powered Task Manager",
+            "tech": "Python, Django REST Framework, React, PostgreSQL, Docker",
+            "date": "2023",
+            "details": [
+                'Developed a full-stack web application that uses natural language processing (NLP) to categorize and prioritize user tasks automatically.',
+                'Designed and implemented a secure, token-based authentication system using JWT.'
+            ],
+            "link": "github.com/alexchen/ai-task-manager"
+        }
+    ],
+    
+    # --- Education ---
+    "education": [
+        {
+            "degree": "Bachelor of Science in Computer Science",
+            "institution": "University of California, Berkeley",
+            "location": "Berkeley, CA",
+            "date": "Aug 2017 – May 2021",
+            "details": [
+                "GPA: 3.8/4.0, Graduated with Honors.",
+                "Relevant Coursework: Advanced Algorithms, Data Structures, Web Development, Machine Learning."
+            ]
+        }
+    ]
+}
+
+# ==============================================================================
+#  PRESENTATION LOGIC (NO NEED TO EDIT BELOW THIS LINE)
+# ==============================================================================
+
+# --- Utility Functions ---
+
+def set_document_margins(doc):
+    """Set narrow margins for the document."""
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Inches(0.5)
+        section.bottom_margin = Inches(0.5)
+        section.left_margin = Inches(0.75)
+        section.right_margin = Inches(0.75)
+
+def set_font_styles(doc):
+    """Define and set the default font for the document."""
+    style = doc.styles['Normal']
+    font = style.font
+    font.name = 'Calibri'
+    font.size = Pt(10.5)
+
+def add_section_heading(doc, text):
+    """Add a styled heading for a new section."""
+    p = doc.add_paragraph()
+    p.add_run(text.upper()).bold = True
+    p.paragraph_format.space_before = Pt(12)
+    p.paragraph_format.space_after = Pt(4)
+    # Add a bottom border
+    p_border = OxmlElement('w:pBdr')
+    p_border.set(qn('w:bottom'), 'single')
+    p.get_or_add_pPr().append(p_border)
+
+def add_entry(p, text, bold=False, italic=False):
+    """Add a run of text to a paragraph with optional styling."""
+    run = p.add_run(text)
+    run.bold = bold
+    run.italic = italic
+
+# --- Section Builder Functions ---
+
+def build_header(doc, data):
+    """Build the resume header with name, tagline, and contact info."""
+    doc.add_paragraph(data['name'], style='Title').paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph(data['tagline'], style='Subtitle').paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    p_contact = doc.add_paragraph()
+    p_contact.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_contact.paragraph_format.space_before = Pt(0)
+    
+    contacts = [data['email'], data['phone'], data['location'], data['linkedin'], data['github'], data['portfolio']]
+    for i, contact in enumerate(contacts):
+        if contact:
+            add_entry(p_contact, contact)
+            if i < len(contacts) - 1:
+                 add_entry(p_contact, ' | ')
+
+def build_summary(doc, data):
+    """Build the professional summary section."""
+    add_section_heading(doc, 'Professional Summary')
+    doc.add_paragraph(data['summary'])
+
+def build_core_competencies(doc, data):
+    """Build the core competencies section."""
+    add_section_heading(doc, 'Core Competencies')
+    p = doc.add_paragraph()
+    competencies = data.get('core_competencies', [])
+    for i, skill in enumerate(competencies):
+        add_entry(p, skill)
+        if i < len(competencies) - 1:
+            add_entry(p, ' • ')
+
+def build_experience(doc, data):
+    """Build the professional experience section."""
+    add_section_heading(doc, 'Professional Experience')
+    for job in data.get('experience', []):
+        p = doc.add_paragraph()
+        add_entry(p, job['title'], bold=True)
+        add_entry(p, f" | {job['company']} | {job['location']}")
+        p.add_run('\\t' + job['date']).italic = True
+        p.paragraph_format.tabs.add_tab_stop(Inches(7.0), alignment=WD_ALIGN_PARAGRAPH.RIGHT)
+        for detail in job['details']:
+            doc.add_paragraph(detail, style='List Bullet')
+
+def build_projects(doc, data):
+    """Build the projects section."""
+    if 'projects' in data and data['projects']:
+        add_section_heading(doc, 'Personal Projects')
+        for project in data.get('projects', []):
+            p = doc.add_paragraph()
+            add_entry(p, project['title'], bold=True)
+            if project.get('link'):
+                 add_entry(p, f" | {project['link']}")
+            p.add_run('\\t' + project['date']).italic = True
+            p.paragraph_format.tabs.add_tab_stop(Inches(7.0), alignment=WD_ALIGN_PARAGRAPH.RIGHT)
+            
+            p_tech = doc.add_paragraph()
+            p_tech.paragraph_format.space_before = Pt(0)
+            add_entry(p_tech, f"Tech Stack: {project['tech']}", italic=True)
+
+            for detail in project['details']:
+                doc.add_paragraph(detail, style='List Bullet')
+
+def build_education(doc, data):
+    """Build the education section."""
+    add_section_heading(doc, 'Education')
+    for edu in data.get('education', []):
+        p = doc.add_paragraph()
+        add_entry(p, edu['degree'], bold=True)
+        add_entry(p, f" | {edu['institution']} | {edu['location']}")
+        p.add_run('\\t' + edu['date']).italic = True
+        p.paragraph_format.tabs.add_tab_stop(Inches(7.0), alignment=WD_ALIGN_PARAGRAPH.RIGHT)
+        for detail in edu['details']:
+            doc.add_paragraph(detail, style='List Bullet')
+
+def generate_resume(data):
+    """Main function to generate the resume document."""
+    doc = Document()
+    set_document_margins(doc)
+    set_font_styles(doc)
+
+    # Build each section
+    build_header(doc, data)
+    build_summary(doc, data)
+    build_core_competencies(doc, data)
+    build_experience(doc, data)
+    build_projects(doc, data)
+    build_education(doc, data)
+
+    # Save the document
+    file_name = f"{data['name'].replace(' ', '_')}_Resume.docx"
+    doc.save(file_name)
+    print(f"✅ Successfully generated resume: {file_name}")
+
+if __name__ == "__main__":
+    generate_resume(resume_data)
+`;
+
+            // --- Syntax Highlighting and Copy Button Logic ---
+            function applySyntaxHighlighting(code) {
+                return code
+                    .replace(/^#.*$/gm, '<span class="token comment">$&</span>') // Comments
+                    .replace(/\b(def|from|import|if|in|for|return|class|__name__|__main__|True|False)\b/g, '<span class="token keyword">$&</span>') // Keywords
+                    .replace(/(["'])(?:(?=(\\\\?))\\?.)*?\1/g, '<span class="token string">$&</span>') // Strings
+                    .replace(/\b(generate_resume|add_entry|print|Document|set_document_margins|set_font_styles|build_header|build_summary|build_core_competencies|build_experience|build_projects|build_education|add_section_heading)\b/g, '<span class="token function">$&</span>') // Functions
+                    .replace(/\b([A-Z_]+)\b/g, '<span class="token number">$&</span>') // Constants
+                    .replace(/(@\w+)/g, '<span class="token decorator">$&</span>'); // Decorators
+            }
+
+            const codeBlock = document.getElementById('code-block');
+            if (codeBlock) {
+                codeBlock.innerHTML = applySyntaxHighlighting(pythonCode.trim());
+            }
+
+            const copyButton = document.getElementById('copy-button');
+            if (copyButton) {
+                copyButton.addEventListener('click', () => {
+                    navigator.clipboard.writeText(pythonCode.trim());
+                    copyButton.textContent = 'Copied!';
+                    copyButton.classList.remove('bg-indigo-500', 'hover:bg-indigo-600');
+                    copyButton.classList.add('bg-green-500');
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy Code';
+                        copyButton.classList.remove('bg-green-500');
+                        copyButton.classList.add('bg-indigo-500', 'hover:bg-indigo-600');
+                    }, 2000);
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

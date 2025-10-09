@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Damn Awesome Resume Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- Design System & Base Styles --- */
+        :root {
+            --background: 240 10% 3.9%;
+            --foreground: 0 0% 98%;
+            --primary: 262 83.3% 57.8%;
+            --primary-foreground: 0 0% 100%;
+            --secondary: 222.2 47.4% 11.2%;
+            --muted: 240 5% 25%;
+            --muted-foreground: 240 5% 65%;
+            --accent: 190 95% 55%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* --- Custom Cursor --- */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid hsl(var(--primary));
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        .cursor-glow {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, hsl(var(--primary) / 0.1), transparent 70%);
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .cursor.active {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: hsl(var(--primary) / 0.3);
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+
+            .cursor,
+            .cursor-glow {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+
+            button,
+            a,
+            .card {
+                cursor: pointer;
+            }
+        }
+
+        /* --- Layout & Sections --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        section {
+            padding: 6rem 0;
+        }
+
+        /* --- Navbar Styles --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 1rem 0;
+        }
+
+        nav.scrolled {
+            background: hsla(var(--background), 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid hsl(var(--muted) / 0.5);
+            padding: 0.75rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo-link {
+            text-decoration: none;
+            color: hsl(var(--foreground));
+        }
+
+        nav h4 {
+            font-weight: 600;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav .nav-links a {
+            text-decoration: none;
+            color: hsl(var(--muted-foreground));
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav .nav-links a:hover {
+            color: hsl(var(--primary));
+        }
+
+        @media (max-width: 768px) {
+            nav .nav-links {
+                display: none;
+                /* Hides links on smaller screens for simplicity */
+            }
+        }
+
+        /* --- Header & Hero Section --- */
+        header {
+            text-align: center;
+            padding: 8rem 0 10rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            border: 1px solid hsl(var(--primary) / 0.3);
+            background: hsl(var(--primary) / 0.1);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 6s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: hsl(var(--muted-foreground));
+            max-width: 48rem;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: hsl(var(--primary-foreground));
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            transition: all 0.3s;
+            box-shadow: 0 0 40px hsl(var(--primary) / 0.4);
+            text-decoration: none;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 0 60px hsl(var(--primary) / 0.6);
+        }
+
+        /* --- Section Header --- */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 .highlight {
+            color: hsl(var(--primary));
+        }
+
+        .section-header p {
+            color: hsl(var(--muted-foreground));
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        /* --- Card Styles --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .card-wrapper {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .card-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 1.5rem;
+            filter: blur(50px);
+            opacity: 0;
+            transition: all 0.5s;
+        }
+
+        .card-wrapper:hover .card-glow {
+            opacity: 0.3;
+        }
+
+        .card {
+            background-color: hsl(var(--secondary));
+            border: 1px solid hsl(var(--muted) / 0.5);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-style: preserve-3d;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            border-color: hsl(var(--primary) / 0.5);
+            box-shadow: 0 20px 50px hsl(var(--background) / 0.5);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            color: hsl(var(--primary));
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: hsl(var(--muted-foreground));
+            line-height: 1.7;
+            flex-grow: 1;
+            font-weight: 500;
+        }
+
+        .card .icon {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: hsl(var(--primary));
+        }
+
+        .card li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            color: hsl(var(--muted-foreground));
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        /* --- Toggle Switch for Before/After --- */
+        .toggle-container {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid hsl(var(--muted) / 0.5);
+            transform: translateZ(1px);
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background-color: hsl(var(--muted));
+            border-radius: 34px;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked+.slider {
+            background-color: hsl(var(--primary));
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .code-example {
+            background: hsl(var(--background));
+            border: 1px solid hsl(var(--muted));
+            padding: 1.5rem;
+            border-radius: 1rem;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .code-example>div {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+        }
+
+        .before-content {
+            color: #d1d5db;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .after-content {
+            color: #a5d6ff;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        /* --- Animations --- */
+        @keyframes gradient-shift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Python Code Block & How-To --- */
+        #generator {
+            background: linear-gradient(180deg, hsl(var(--background)), #0c0a14);
+        }
+
+        .code-block-container {
+            background: #0d1117;
+            border: 1px solid hsl(var(--muted));
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: #161b22;
+            border-bottom: 1px solid hsl(var(--muted));
+        }
+
+        .code-header span {
+            font-family: monospace;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .copy-button {
+            background: hsl(var(--primary));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            background: hsl(var(--primary) / 0.8);
+            transform: scale(1.05);
+        }
+
+        .code-body {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .code-body pre {
+            white-space: pre-wrap;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .token-comment {
+            color: #8b949e;
+        }
+
+        .token-keyword {
+            color: #ff7b72;
+        }
+
+        .token-string {
+            color: #a5d6ff;
+        }
+
+        .token-function {
+            color: #d2a8ff;
+        }
+
+        .how-to-card {
+            background-color: hsl(var(--secondary));
+            border: 1px solid hsl(var(--muted) / 0.5);
+            border-radius: 1rem;
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .how-to-card h4 {
+            color: hsl(var(--primary));
+            margin-bottom: 0.5rem;
+        }
+
+        .how-to-card p {
+            color: hsl(var(--muted-foreground));
+            line-height: 1.6;
+        }
+
+        .how-to-card code {
+            display: block;
+            background: hsl(var(--background));
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            color: #a5d6ff;
+        }
+
+        /* --- Footer --- */
+        /* --- Footer --- */
+        footer {
+            position: relative;
+            z-index: 10;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 6rem;
+            padding: 6rem 0 3rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            margin-bottom: 5rem;
+        }
+
+        .footer-content h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-content p {
+            color: hsl(var(--muted-foreground));
+            max-width: 32rem;
+            margin: 0 auto 2.5rem;
+            font-size: 1.125rem;
+            line-height: 1.7;
+        }
+
+        .footer-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 9999px;
+            border: 1px solid hsl(var(--primary) / 0.3);
+            color: hsl(var(--primary-foreground));
+            background: hsl(var(--primary) / 0.1);
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .footer-button:hover {
+            background: hsl(var(--primary) / 0.2);
+            border-color: hsl(var(--primary) / 0.5);
+            transform: translateY(-4px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 3rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: hsl(var(--muted-foreground));
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: hsl(var(--foreground));
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            color: hsl(var(--muted-foreground));
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            color: hsl(var(--primary));
+            transform: translateY(-4px);
+        }
+
+        .social-links svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .copyright {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-glow"></div>
+
+    <nav id="navbar">
+        <div class="container">
+            <a href="#" class="logo-link">
+                <h4>The Awesome Resume Guide</h4>
+            </a>
+            <div class="nav-links">
+                <a href="#philosophy" class="magnetic">Philosophy</a>
+                <a href="#anatomy" class="magnetic">Anatomy</a>
+                <a href="#generator" class="magnetic">Generator</a>
+            </div>
+        </div>
+    </nav>
+
+    <header>
+        <div class="container">
+            <div class="hero-badge reveal">
+                <span>Your Career Upgrade Starts Here</span>
+            </div>
+            <h1 class="reveal" style="transition-delay: 0.1s;">The Damn Awesome Resume Guide</h1>
+            <p class="reveal" style="transition-delay: 0.2s;">
+                Stop listing chores. Start marketing yourself. This guide transforms your resume into a powerful
+                document that convinces recruiters you're the solution they've been searching for—in 10 seconds flat.
+            </p>
+            <a href="#philosophy" class="hero-button magnetic reveal" style="transition-delay: 0.3s;">Let's Build</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="philosophy">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>The <span class="highlight">Mindset</span> Shift</h2>
+                    <p>Three rules to rule them all. Internalize these before you write a single word.</p>
+                </div>
+                <div class="card-grid">
+                    <div class="card-wrapper reveal">
+                        <div class="card-glow" style="background: hsl(262 83.3% 57.8%);"></div>
+                        <div class="card" data-tilt>
+                            <h3>1. The One-Page Mandate</h3>
+                            <p>Unless you're a CEO with 15+ years of experience, your resume is one page. Period. This
+                                forces ruthless prioritization and makes every word count.</p>
+                        </div>
+                    </div>
+                    <div class="card-wrapper reveal" style="transition-delay: 0.1s;">
+                        <div class="card-glow" style="background: hsl(190 95% 55%);"></div>
+                        <div class="card" data-tilt>
+                            <h3>2. The Recruiter Audience</h3>
+                            <p>They're busy, caffeinated, and scanning. Your resume must be clean, scannable, and
+                                instantly scream value. It's an ad, not an autobiography.</p>
+                        </div>
+                    </div>
+                    <div class="card-wrapper reveal" style="transition-delay: 0.2s;">
+                        <div class="card-glow" style="background: hsl(330 95% 68%);"></div>
+                        <div class="card" data-tilt>
+                            <h3>3. The Tailoring Imperative</h3>
+                            <p>A generic resume is a dead resume. Each application gets a custom-tailored version. This
+                                is non-negotiable and the single biggest key to success.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="anatomy">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>Anatomy of an <span class="highlight">Unbeatable</span> Resume</h2>
+                    <p>Deconstructing the sections that make a real impact.</p>
+                </div>
+                <div id="anatomy-content" class="card-grid">
+                    <!-- JS will populate this -->
+                </div>
+            </div>
+        </section>
+
+        <section id="design">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>Design & <span class="highlight">Formatting</span></h2>
+                    <p>Clarity and professionalism are non-negotiable. Make it easy on the eyes.</p>
+                </div>
+                <div class="card-grid">
+                    <div class="card-wrapper reveal" style="margin: 0 auto; max-width: 500px;">
+                        <div class="card-glow" style="background: hsl(262 83.3% 57.8%);"></div>
+                        <div class="card" data-tilt>
+                            <ul>
+                                <li><span class="icon">✓</span>
+                                    <div><strong>Font:</strong> Use a professional, legible font. A modern sans-serif
+                                        like Inter or a classic serif like Garamond works wonders. Consistency is key.
+                                    </div>
+                                </li>
+                                <li><span class="icon">✓</span>
+                                    <div><strong>Whitespace:</strong> Don't cram everything. Use generous margins and
+                                        spacing between sections. It makes the document breathable and easy to scan.
+                                    </div>
+                                </li>
+                                <li><span class="icon">✓</span>
+                                    <div><strong>Consistency:</strong> Use the same formatting for dates, locations, and
+                                        job titles throughout. It signals attention to detail.</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="polish">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>The Final <span class="highlight">Polish</span></h2>
+                    <p>You're almost there. Don't stumble at the finish line.</p>
+                </div>
+                <div class="card-grid">
+                    <div class="card-wrapper reveal" style="margin: 0 auto; max-width: 500px;">
+                        <div class="card-glow" style="background: hsl(190 95% 55%);"></div>
+                        <div class="card" data-tilt>
+                            <ul>
+                                <li><span class="icon">1.</span>
+                                    <div><strong>Proofread. Then Proofread Again.</strong> A single typo can send your
+                                        resume to the trash. Read it out loud. Use a grammar checker. Give it to a
+                                        friend.</div>
+                                </li>
+                                <li><span class="icon">2.</span>
+                                    <div><strong>Export to PDF.</strong> Always submit as a PDF to preserve your
+                                        meticulous formatting. Name it professionally: `FirstName-LastName-Resume.pdf`.
+                                    </div>
+                                </li>
+                                <li><span class="icon">3.</span>
+                                    <div><strong>Get Feedback.</strong> A fresh pair of eyes will always catch something
+                                        you missed. Ask a mentor, a friend in the industry, or a career services
+                                        professional.</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="generator">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>The <span class="highlight">Automagic</span> Resume Builder</h2>
+                    <p>Fill in your details, run one command, and get a perfectly formatted resume.</p>
+                </div>
+
+                <div class="code-block-container reveal">
+                    <div class="code-header">
+                        <span>resume_thingdom.py</span>
+                        <button id="copy-button" class="copy-button magnetic">Copy Code</button>
+                    </div>
+                    <div class="code-body">
+                        <pre><code id="code-block"></code></pre>
+                    </div>
+                </div>
+
+                <div class="section-header reveal" style="margin-top: 6rem;">
+                    <h2>How to <span class="highlight">Use</span> It</h2>
+                </div>
+                <div class="card-grid">
+                    <div class="reveal">
+                        <div class="how-to-card">
+                            <h4>1. Install Library</h4>
+                            <p>Open your terminal or command prompt and run this command to install the necessary Python
+                                library.</p>
+                            <code>pip install python-docx</code>
+                        </div>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.1s;">
+                        <div class="how-to-card">
+                            <h4>2. Save the Code</h4>
+                            <p>Save the complete Python script as a file named `resume_builder.py` on your computer.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.2s;">
+                        <div class="how-to-card">
+                            <h4>3. Edit Your Data</h4>
+                            <p>Open the file and fill in the `resume_data` dictionary at the top with your personal
+                                details.</p>
+                        </div>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.3s;">
+                        <div class="how-to-card">
+                            <h4>4. Run the Script</h4>
+                            <p>Navigate to the file's location in your terminal and run the script to generate your
+                                `.docx` file.</p>
+                            <code>python resume_builder.py</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content reveal">
+                <h3>Have a <span class="text-gradient-primary">Thing</span> in mind?</h3>
+                <p>Let's build something cool together. Reach out and share your ideas!</p>
+                <a href="mailto:hello@thingdom.com" class="footer-button magnetic">
+                    Get In Touch
+                </a>
+            </div>
+            <div class="footer-bottom reveal">
+                <div class="footer-links">
+                    <a href="/privacy.html">Privacy Policy</a>
+                    <a href="/terms.html">Terms of Service</a>
+                    <a href="/contact.html">Contact Us</a>
+                </div>
+                <div class="social-links">
+                    <a href="#" aria-label="Twitter">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z">
+                            </path>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="GitHub">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.1.39-1.99 1.03-2.69a3.6 3.6 0 0 1 .1-2.64s.84-.27 2.75 1.02a9.58 9.58 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.4.1 2.64.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.72c0 .27.18.58.69.48A10 10 0 0 0 22 12 10 10 0 0 0 12 2Z">
+                            </path>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Dribbble">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12zm-2.81-16.485c.997.014 1.89.333 2.67.957-3.354 1.62-5.74 4.44-6.82 7.733-.51-1.55-.42-3.21.26-4.755 1.05-2.38 3.09-4.24 5.56-4.935l-.67.002zm5.79 1.96c-1.35-1.32-3.2-2.11-5.12-2.11-.27 0-.54.01-.8.04 3.79 1.14 6.51 3.93 7.66 7.3.36-1.54.12-3.17-.74-4.63v.01zM8.19 19.31c2.16.96 4.6.93 6.73-.08-1.06 1.48-2.73 2.51-4.62 2.82-.63.09-1.26.1-1.88.02-.08 0-.15-.01-.23-.02v.01z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+                <p class="copyright">© 2025 <span class="text-gradient-primary"
+                        style="font-weight: 700;">Thingdom</span> — All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Navbar Scroll Logic ---
+            const navbar = document.getElementById('navbar');
+            if (navbar) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+            }
+
+            // --- Custom Cursor Logic ---
+            if (window.matchMedia("(pointer: fine)").matches) {
+                const cursor = document.querySelector('.cursor');
+                const cursorGlow = document.querySelector('.cursor-glow');
+                let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                });
+
+                function animateCursor() {
+                    cursorX += (mouseX - cursorX) * 0.15;
+                    cursorY += (mouseY - cursorY) * 0.15;
+                    cursor.style.transform = `translate(${cursorX - 10}px, ${cursorY - 10}px)`;
+                    cursorGlow.style.transform = `translate(${cursorX - 150}px, ${cursorY - 150}px)`;
+                    requestAnimationFrame(animateCursor);
+                }
+                animateCursor();
+
+                document.querySelectorAll('button, a, .card').forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+                });
+            }
+
+            // --- Magnetic Effect Logic ---
+            document.querySelectorAll('.magnetic').forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    el.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'translate(0, 0)';
+                });
+            });
+
+            // --- 3D Tilt Effect Logic ---
+            document.querySelectorAll('[data-tilt]').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const rotateX = (e.clientY - rect.top - rect.height / 2) / 15;
+                    const rotateY = (rect.left + rect.width / 2 - e.clientX) / 15;
+                    card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+                });
+            });
+
+            // --- Scroll Reveal Logic ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -100px 0px' });
+
+            // --- ANATOMY SECTION CONTENT INJECTION ---
+            const anatomySections = {
+                'Header': {
+                    content: 'Your digital handshake. Make it clean, professional, and include your key links (LinkedIn, GitHub).',
+                    before: 'John Doe\n123 Main St, Anytown',
+                    after: 'JOHN DOE | Software Engineer\njohndoe@email.com | linkedin.com/in/johndoe'
+                },
+                'Summary': {
+                    content: 'A 2-3 sentence elevator pitch. Ditch the "Objective" and sell your value proposition immediately.',
+                    before: 'Hardworking student looking for an entry-level software engineering role.',
+                    after: 'Innovative Software Engineer with 4+ years of experience building scalable web apps. Proven ability to lead projects from concept to deployment.'
+                },
+                'Experience': {
+                    content: 'This is where you prove your value. Don\'t list duties; showcase achievements with quantifiable results.',
+                    before: '- Wrote code for the e-commerce platform.\n- Fixed bugs.',
+                    after: '- Decreased cart abandonment by 15% by overhauling the checkout process.\n- Reduced production bugs by 40% by integrating a Jest & Cypress testing suite.'
+                },
+                'Projects': {
+                    content: 'For new grads, this is as crucial as experience. It shows initiative and practical skills. Link to your code!',
+                    before: 'Project: To-Do App',
+                    after: 'AI Task Manager (github.com/link)\n- Developed a full-stack app using Django and React that uses NLP to categorize tasks.'
+                },
+                'Skills': {
+                    content: 'This section is for both bots (ATS) and the human eye. Group them logically for easy scanning.',
+                    before: 'Skills: JavaScript, Python, React, SQL',
+                    after: 'Languages: Python, JavaScript (ES6+), SQL\nFrameworks: Django, React, Node.js\nTools: Docker, AWS, Git'
+                },
+                'Education': {
+                    content: 'Short and sweet. Degree, university, and graduation date. Add honors or relevant coursework if you\'re a recent grad.',
+                    before: 'State University, 2021',
+                    after: 'B.S. in Computer Science\nUniversity of California, Berkeley | May 2021\nHonors: Magna Cum Laude, Dean\'s List'
+                }
+            };
+
+            const anatomyContainer = document.getElementById('anatomy-content');
+            if (anatomyContainer) {
+                let delay = 0;
+                Object.entries(anatomySections).forEach(([title, data]) => {
+                    const id = `toggle-${title.replace(/\s+/g, '-').toLowerCase()}`;
+                    const cardHTML = `
+                    <div class="card-wrapper reveal" style="transition-delay: ${delay}s;">
+                        <div class="card-glow" style="background: hsl(var(--primary));"></div>
+                        <div class="card" data-tilt>
+                            <h3>${title}</h3>
+                            <p>${data.content}</p>
+                            <div class="toggle-container">
+                                <div class="toggle-switch">
+                                    <span>Good</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="${id}">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span>Great!</span>
+                                </div>
+                                <div class="code-example">
+                                    <div class="before-content">${data.before}</div>
+                                    <div class="after-content" style="opacity: 0; display: block; transform: translateY(10px);">${data.after}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    anatomyContainer.innerHTML += cardHTML;
+                    delay += 0.1;
+                });
+
+                document.querySelectorAll('.switch input').forEach(toggle => {
+                    toggle.addEventListener('change', function () {
+                        const container = this.closest('.toggle-container');
+                        const beforeContent = container.querySelector('.before-content');
+                        const afterContent = container.querySelector('.after-content');
+
+                        if (this.checked) {
+                            beforeContent.style.opacity = '0';
+                            beforeContent.style.transform = 'translateY(-10px)';
+                            afterContent.style.opacity = '1';
+                            afterContent.style.transform = 'translateY(0)';
+                        } else {
+                            afterContent.style.opacity = '0';
+                            afterContent.style.transform = 'translateY(10px)';
+                            beforeContent.style.opacity = '1';
+                            beforeContent.style.transform = 'translateY(0)';
+                        }
+                    });
+                });
+            }
+
+            // Re-initialize observers and effects for dynamically added content
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            document.querySelectorAll('[data-tilt]').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const rotateX = (e.clientY - rect.top - rect.height / 2) / 15;
+                    const rotateY = (rect.left + rect.width / 2 - e.clientX) / 15;
+                    card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+                });
+            });
+
+            // --- PYTHON CODE BLOCK LOGIC ---
+            const fullPythonCode = `
+# Ensure you have the library: pip install python-docx
+
+from docx import Document
+from docx.shared import Pt, Inches, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+# ==============================================================================
+#  ✅ EDIT THIS SECTION TO CUSTOMIZE YOUR RESUME ✅
+# ==============================================================================
+resume_data = {
+    # --- Personal Information ---
+    "name": "ALEXANDER CHEN",
+    "tagline": "Software Engineer | Product Builder | AI Enthusiast",
+    "email": "alex.chen@email.com",
+    "phone": "+1 (555) 123-4567",
+    "location": "San Francisco, CA",
+    "linkedin": "linkedin.com/in/alexchen-dev",
+    "github": "github.com/alexchen",
+    "portfolio": "alexchen.dev",
+    
+    # --- Professional Summary ---
+    "summary": "Innovative Software Engineer with 4+ years of experience in the full software development lifecycle (SDLC), from concept through to deployment. A proactive problem-solver with a proven track record of building scalable, user-centric web applications and RESTful APIs using agile methodologies. Passionate about leveraging new technologies to create efficient and impactful solutions.",
+    
+    # --- Core Competencies ---
+    "core_competencies": [
+        "Python (Django, Flask)", "JavaScript (React, Node.js)", "Database Architecture (PostgreSQL, MongoDB)",
+        "Cloud Services (AWS, Docker)", "Agile & Scrum Methodologies", "CI/CD & DevOps Practices"
+    ],
+    
+    # --- Professional Experience ---
+    "experience": [
+        {
+            "title": "Software Engineer",
+            "company": "Innovatech Solutions Inc.",
+            "location": "San Francisco, CA",
+            "date": "July 2023 – Present",
+            "details": [
+                'Overhauled the main product’s data processing pipeline using Python and Celery, reducing report generation time by 60% and supporting a 3x increase in data volume.',
+                'Engineered and launched a new client-facing REST API with Node.js and Express, which now serves over 1 million requests per day and increased partner integration capabilities by 40%.',
+                'Mentored two junior engineers, providing code reviews and guidance that improved team-wide code quality and adherence to best practices.'
+            ]
+        },
+        {
+            "title": "Junior Developer",
+            "company": "Digital Creations Co.",
+            "location": "Palo Alto, CA",
+            "date": "June 2021 – July 2023",
+            "details": [
+                'Developed and maintained 5+ responsive client websites using React, resulting in an average 15% increase in user engagement metrics.',
+                'Collaborated in an Agile team to refactor a legacy monolithic application into a microservices architecture, improving system scalability and reducing deployment times by 25%.',
+                'Implemented a comprehensive testing suite with Jest and Cypress, increasing test coverage from 30% to 85% and decreasing critical production bugs by 50%.'
+            ]
+        }
+    ],
+
+    # --- Projects ---
+     "projects": [
+        {
+            "title": "AI-Powered Task Manager",
+            "tech": "Python, Django REST Framework, React, PostgreSQL, Docker",
+            "date": "2023",
+            "details": [
+                'Developed a full-stack web application that uses natural language processing (NLP) to categorize and prioritize user tasks automatically.',
+                'Designed and implemented a secure, token-based authentication system using JWT.'
+            ],
+            "link": "github.com/alexchen/ai-task-manager"
+        }
+    ],
+    
+    # --- Education ---
+    "education": [
+        {
+            "degree": "Bachelor of Science in Computer Science",
+            "institution": "University of California, Berkeley",
+            "location": "Berkeley, CA",
+            "date": "Aug 2017 – May 2021",
+            "details": [
+                "GPA: 3.8/4.0, Graduated with Honors.",
+                "Relevant Coursework: Advanced Algorithms, Data Structures, Web Development, Machine Learning."
+            ]
+        }
+    ]
+}
+
+# ==============================================================================
+#  PRESENTATION LOGIC (NO NEED TO EDIT BELOW THIS LINE)
+# ==============================================================================
+
+# --- Utility Functions ---
+
+def set_document_margins(doc):
+    """Set narrow margins for the document."""
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Inches(0.5)
+        section.bottom_margin = Inches(0.5)
+        section.left_margin = Inches(0.75)
+        section.right_margin = Inches(0.75)
+
+def set_font_styles(doc):
+    """Define and set the default font for the document."""
+    style = doc.styles['Normal']
+    font = style.font
+    font.name = 'Calibri'
+    font.size = Pt(10.5)
+
+def add_section_heading(doc, text):
+    """Add a styled heading for a new section."""
+    p = doc.add_paragraph()
+    p.add_run(text.upper()).bold = True
+    p.paragraph_format.space_before = Pt(12)
+    p.paragraph_format.space_after = Pt(4)
+    # Add a bottom border
+    p_border = OxmlElement('w:pBdr')
+    p_border.set(qn('w:bottom'), 'single')
+    p.get_or_add_pPr().append(p_border)
+
+def add_entry(p, text, bold=False, italic=False):
+    """Add a run of text to a paragraph with optional styling."""
+    run = p.add_run(text)
+    run.bold = bold
+    run.italic = italic
+
+# --- Section Builder Functions ---
+
+def build_header(doc, data):
+    """Build the resume header with name, tagline, and contact info."""
+    doc.add_paragraph(data['name'], style='Title').paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph(data['tagline'], style='Subtitle').paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    p_contact = doc.add_paragraph()
+    p_contact.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_contact.paragraph_format.space_before = Pt(0)
+    
+    contacts = [data['email'], data['phone'], data['location'], data['linkedin'], data['github'], data['portfolio']]
+    for i, contact in enumerate(contacts):
+        if contact:
+            add_entry(p_contact, contact)
+            if i < len(contacts) - 1:
+                 add_entry(p_contact, ' | ')
+
+def build_summary(doc, data):
+    """Build the professional summary section."""
+    add_section_heading(doc, 'Professional Summary')
+    doc.add_paragraph(data['summary'])
+
+def build_core_competencies(doc, data):
+    """Build the core competencies section."""
+    add_section_heading(doc, 'Core Competencies')
+    p = doc.add_paragraph()
+    competencies = data.get('core_competencies', [])
+    for i, skill in enumerate(competencies):
+        add_entry(p, skill)
+        if i < len(competencies) - 1:
+            add_entry(p, ' • ')
+
+def build_experience(doc, data):
+    """Build the professional experience section."""
+    add_section_heading(doc, 'Professional Experience')
+    for job in data.get('experience', []):
+        p = doc.add_paragraph()
+        add_entry(p, job['title'], bold=True)
+        add_entry(p, f" | {job['company']} | {job['location']}")
+        p.add_run('\\t' + job['date']).italic = True
+        p.paragraph_format.tabs.add_tab_stop(Inches(7.0), alignment=WD_ALIGN_PARAGRAPH.RIGHT)
+        for detail in job['details']:
+            doc.add_paragraph(detail, style='List Bullet')
+
+def build_projects(doc, data):
+    """Build the projects section."""
+    if 'projects' in data and data['projects']:
+        add_section_heading(doc, 'Personal Projects')
+        for project in data.get('projects', []):
+            p = doc.add_paragraph()
+            add_entry(p, project['title'], bold=True)
+            if project.get('link'):
+                 add_entry(p, f" | {project['link']}")
+            p.add_run('\\t' + project['date']).italic = True
+            p.paragraph_format.tabs.add_tab_stop(Inches(7.0), alignment=WD_ALIGN_PARAGRAPH.RIGHT)
+            
+            p_tech = doc.add_paragraph()
+            p_tech.paragraph_format.space_before = Pt(0)
+            add_entry(p_tech, f"Tech Stack: {project['tech']}", italic=True)
+
+            for detail in project['details']:
+                doc.add_paragraph(detail, style='List Bullet')
+
+def build_education(doc, data):
+    """Build the education section."""
+    add_section_heading(doc, 'Education')
+    for edu in data.get('education', []):
+        p = doc.add_paragraph()
+        add_entry(p, edu['degree'], bold=True)
+        add_entry(p, f" | {edu['institution']} | {edu['location']}")
+        p.add_run('\\t' + edu['date']).italic = True
+        p.paragraph_format.tabs.add_tab_stop(Inches(7.0), alignment=WD_ALIGN_PARAGRAPH.RIGHT)
+        for detail in edu['details']:
+            doc.add_paragraph(detail, style='List Bullet')
+
+def generate_resume(data):
+    """Main function to generate the resume document."""
+    doc = Document()
+    set_document_margins(doc)
+    set_font_styles(doc)
+
+    # Build each section
+    build_header(doc, data)
+    build_summary(doc, data)
+    build_core_competencies(doc, data)
+    build_experience(doc, data)
+    build_projects(doc, data)
+    build_education(doc, data)
+
+    # Save the document
+    file_name = f"{data['name'].replace(' ', '_')}_Resume.docx"
+    doc.save(file_name)
+    print(f"✅ Successfully generated resume: {file_name}")
+
+if __name__ == "__main__":
+    generate_resume(resume_data)
+`;
+
+            const displayedPythonCode = fullPythonCode.split('\n').slice(0, 110).join('\n') + '\n# ... (and so on)';
+
+            function applySyntaxHighlighting(code) {
+                return code
+                    .replace(/^#.*$/gm, '<span class="token-comment">$&</span>')
+                    .replace(/\b(def|from|import|if|__name__|__main__)\b/g, '<span class="token-keyword">$&</span>')
+                    .replace(/(["'])(?:(?=(\\\\?))\\?.)*?\1/g, '<span class="token-string">$&</span>')
+                    .replace(/\b(generate_resume|print|Document)\b/g, '<span class="token-function">$&</span>');
+            }
+
+            const codeBlock = document.getElementById('code-block');
+            if (codeBlock) {
+                codeBlock.innerHTML = applySyntaxHighlighting(displayedPythonCode);
+            }
+
+            const copyButton = document.getElementById('copy-button');
+            if (copyButton) {
+                copyButton.addEventListener('click', () => {
+                    // This would contain the actual full python script from previous steps
+                    navigator.clipboard.writeText(fullPythonCode.trim());
+                    copyButton.textContent = 'Copied!';
+                    copyButton.classList.remove('bg-indigo-500', 'hover:bg-indigo-600');
+                    copyButton.classList.add('bg-green-500');
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy Code';
+                        copyButton.classList.remove('bg-green-500');
+                        copyButton.classList.add('bg-indigo-500', 'hover:bg-indigo-600');
+                    }, 2000);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

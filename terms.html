@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Royal Decree — Thingdom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: 240 10% 3.9%; --foreground: 0 0% 98%; --primary: 262 83.3% 57.8%;
+            --primary-foreground: 0 0% 100%; --secondary: 222.2 47.4% 11.2%; --muted: 240 5% 25%;
+            --muted-foreground: 240 5% 65%; --accent: 190 95% 55%;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif; font-weight: 500; background-color: hsl(var(--background));
+            color: hsl(var(--foreground)); overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.025; pointer-events: none; z-index: -1;
+        }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+        
+        nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid hsl(var(--muted) / 0.5);
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        nav .logo-link { text-decoration: none; color: hsl(var(--foreground)); }
+        nav h4 { font-weight: 600; font-size: 1.25rem; }
+        .text-gradient-primary {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .content-section { padding: 6rem 0; }
+        .content-section h1 {
+            font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem;
+            color: hsl(var(--primary));
+        }
+        .content-section .subtitle {
+            font-size: 1.25rem; font-weight: 500; color: hsl(var(--muted-foreground));
+            margin-bottom: 4rem; line-height: 1.7;
+        }
+        .content-section h2 {
+            font-size: 2rem; color: hsl(var(--primary)); margin-top: 3rem; margin-bottom: 1rem;
+            border-left: 3px solid hsl(var(--primary)); padding-left: 1rem;
+        }
+        .content-section p, .content-section li {
+            font-size: 1.1rem; color: hsl(var(--muted-foreground)); line-height: 1.8; margin-bottom: 1rem;
+        }
+        .content-section ul { list-style: none; padding-left: 1rem; }
+        .content-section li { position: relative; padding-left: 2rem; }
+        .content-section li::before {
+            content: '✧'; position: absolute; left: 0; color: hsl(var(--primary));
+            font-size: 1.5rem; line-height: 1.1;
+        }
+        .content-section a { color: hsl(var(--accent)); text-decoration: none; font-weight: 600; }
+        .content-section a:hover { text-decoration: underline; }
+        .disclaimer {
+            margin-top: 4rem; padding: 2rem; border-radius: 1rem;
+            background: hsl(var(--secondary)); border: 1px solid hsl(var(--muted));
+        }
+        .disclaimer h3 { color: #facc15; }
+        .disclaimer p { color: hsl(var(--muted-foreground)); font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo-link">
+                <h4><span class="text-gradient-primary">Thing</span>dom</h4>
+            </a>
+        </div>
+    </nav>
+
+    <main class="content-section">
+        <div class="container">
+            <h1>The Royal Decree</h1>
+            <p class="subtitle">By entering the gates of Thingdom, you agree to abide by this scroll of conduct. It’s here to ensure the kingdom remains a fun, creative, and respectful place for all its citizens.</p>
+
+            <h2>1. Use of Our Things (The Tools)</h2>
+            <p>The tools we build—from the Resume Guide to the GPA Calculator—are crafted for your personal and non-commercial use. We encourage you to use them to create great things for yourself.</p>
+            <ul>
+                <li>The tools and information are provided "as is," without any warranties. While we strive for perfection, we can't guarantee they are free of quirks or bugs. Use them at your own discretion.</li>
+                <li>You may not reproduce, duplicate, or copy the design, code, or content of this website for commercial purposes without our express written permission.</li>
+            </ul>
+
+            <h2>2. Your Conduct in the Kingdom</h2>
+            <p>We ask that all citizens of Thingdom act with honor. This means:</p>
+            <ul>
+                <li>You agree not to use this site for any unlawful purpose or to violate any laws in your jurisdiction.</li>
+                <li>You will not attempt to hack, disrupt, or otherwise compromise the integrity of our servers, code, or user data.</li>
+                <li>Do not attempt to introduce any malicious code, viruses, or worms into the kingdom. Let's keep it clean.</li>
+            </ul>
+
+            <h2>3. Portals to Other Realms (Third-Party Links)</h2>
+            <p>Thingdom may contain links to other websites or resources on the internet. We have no control over these other realms and are not responsible for their content, accuracy, or privacy practices. Explore them at your own risk.</p>
+
+            <h2>4. Limitation of Liability (Protecting the Crown)</h2>
+            <p>To the fullest extent permitted by law, Thingdom and its creators shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our services or tools. In simple terms: if one of our tools miscalculates something and you're late for a dragon-slaying, we're very sorry, but we can't be held responsible.</p>
+            
+            <h2>5. Governing Law</h2>
+            <p>Any disputes related to these terms will be governed by the laws of India, without regard to its conflict of law provisions. All citizens agree to submit to the personal jurisdiction of a court located in Jaipur, Rajasthan.</p>
+
+            <div class="disclaimer">
+                <h3>A Friendly Legal Disclaimer</h3>
+                <p><strong>Important:</strong> Just like our Privacy Policy, this document is not a substitute for professional legal advice. We are creators, not lawyers. We strongly recommend consulting with a legal professional to ensure your Terms of Service are complete and compliant with all applicable laws.</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

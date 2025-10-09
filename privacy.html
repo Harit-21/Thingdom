@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Pact of Privacy — Thingdom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: 240 10% 3.9%; --foreground: 0 0% 98%; --primary: 262 83.3% 57.8%;
+            --primary-foreground: 0 0% 100%; --secondary: 222.2 47.4% 11.2%; --muted: 240 5% 25%;
+            --muted-foreground: 240 5% 65%; --accent: 190 95% 55%;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif; font-weight: 500; background-color: hsl(var(--background));
+            color: hsl(var(--foreground)); overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.025; pointer-events: none; z-index: -1;
+        }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+        
+        nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid hsl(var(--muted) / 0.5);
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        nav .logo-link { text-decoration: none; color: hsl(var(--foreground)); }
+        nav h4 { font-weight: 600; font-size: 1.25rem; }
+        .text-gradient-primary {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .content-section { padding: 6rem 0; }
+        .content-section h1 {
+            font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem;
+            color: hsl(var(--primary));
+        }
+        .content-section .subtitle {
+            font-size: 1.25rem; font-weight: 500; color: hsl(var(--muted-foreground));
+            margin-bottom: 4rem; line-height: 1.7;
+        }
+        .content-section h2 {
+            font-size: 2rem; color: hsl(var(--primary)); margin-top: 3rem; margin-bottom: 1rem;
+            border-left: 3px solid hsl(var(--primary)); padding-left: 1rem;
+        }
+        .content-section p, .content-section li {
+            font-size: 1.1rem; color: hsl(var(--muted-foreground)); line-height: 1.8; margin-bottom: 1rem;
+        }
+        .content-section ul { list-style: none; padding-left: 1rem; }
+        .content-section li { position: relative; padding-left: 2rem; }
+        .content-section li::before {
+            content: '•'; position: absolute; left: 0; color: hsl(var(--primary));
+            font-size: 1.5rem; line-height: 1.1;
+        }
+        .content-section a { color: hsl(var(--accent)); text-decoration: none; font-weight: 600; }
+        .content-section a:hover { text-decoration: underline; }
+        .disclaimer {
+            margin-top: 4rem; padding: 2rem; border-radius: 1rem;
+            background: hsl(var(--secondary)); border: 1px solid hsl(var(--muted));
+        }
+        .disclaimer h3 { color: #facc15; }
+        .disclaimer p { color: hsl(var(--muted-foreground)); font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo-link">
+                <h4><span class="text-gradient-primary">Thing</span>dom</h4>
+            </a>
+        </div>
+    </nav>
+
+    <main class="content-section">
+        <div class="container">
+            <h1>The Pact of Privacy</h1>
+            <p class="subtitle">Welcome to Thingdom. We believe in cool stuff and clear rules. This is our pact with you about your privacy, written for humans, not just lawyers.</p>
+
+            <p>Your privacy is not a trivial thing; it's a fundamental right. Our goal is to be as transparent as possible about how we operate this kingdom and what happens with any data that floats through it.</p>
+
+            <h2>The What & The Why: Information We Collect</h2>
+            <p>Like most websites, we collect a little bit of data to make things work better. We've broken it down into two types:</p>
+            <ul>
+                <li><strong>Non-Personal Data (The Digital Footprints):</strong> When you browse Thingdom, our servers may automatically log anonymous information like your browser type, the pages you visit, and the time you spend here. We use this to understand which things are the coolest and how we can make the kingdom better for everyone. This data is aggregated and can't be used to identify you personally.</li>
+                <li><strong>Personal Data (The Handshake):</strong> The only time we collect personal information, like your name or email, is when you voluntarily give it to us, for example, by filling out our contact form. We use this solely to reply to you and won't subscribe you to any newsletters unless you specifically ask.</li>
+            </ul>
+
+            <h2>Cookies: The Digital Crumbs</h2>
+            <p>Cookies are tiny text files stored on your computer that help websites remember things. We use them for essential functions and to gather the anonymous analytics mentioned above. They're harmless and help make your experience smoother.</p>
+
+            <h2>Third-Party Advertising & Google AdSense</h2>
+            <p>To help keep the lights on in Thingdom, we plan to use third-party advertising networks, including Google AdSense. Here's what that means for you:</p>
+            <ul>
+                <li>Third-party vendors, including Google, use cookies to serve ads based on your prior visits to our website or other websites.</li>
+                <li>Google's use of advertising cookies enables it and its partners to serve ads to you based on your visit to our sites and/or other sites on the Internet.</li>
+                <li>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google's Ads Settings</a>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">www.aboutads.info/choices</a>.</li>
+            </ul>
+
+            <h2>Our Promise: We Don't Sell Your Data</h2>
+            <p>Let's be crystal clear: **We will not sell, rent, or trade your personal information to anyone.** The trust you place in us by visiting our kingdom is something we value deeply.</p>
+
+            <h2>Changes to This Pact</h2>
+            <p>The digital world is always changing, so we may update this Pact of Privacy from time to time. When we do, we'll post the new version here. Your continued use of the site after any changes means you accept the new terms.</p>
+
+            <div class="disclaimer">
+                <h3>A Friendly Legal Disclaimer</h3>
+                <p><strong>Important:</strong> This Privacy Policy is provided for informational purposes and is not a substitute for legal advice. We are developers and creators, not lawyers. You should consult with a legal professional to ensure your website complies with all applicable laws and regulations in your jurisdiction.</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
