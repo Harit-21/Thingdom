@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The 75% Inquisition: Understanding Attendance Policies — Thingdom</title>
+    <meta name="description"
+        content="A deep dive into why the 75% attendance rule is so common in universities, the arguments for and against it, and how to strategically manage it instead of just complying." />
+    <meta name="author" content="Thingdom" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --background: 240 10% 3.9%;
+            --foreground: 0 0% 98%;
+            --primary: 262 83.3% 57.8%;
+            --primary-foreground: 0 0% 100%;
+            --secondary: 222.2 47.4% 11.2%;
+            --muted: 240 5% 25%;
+            --muted-foreground: 240 5% 65%;
+            --accent: 190 95% 55%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid hsl(var(--muted) / 0.5);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo-link {
+            text-decoration: none;
+            color: hsl(var(--foreground));
+        }
+
+        nav h4 {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .text-gradient-primary {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content-section {
+            padding: 6rem 0;
+        }
+
+        .content-section h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: hsl(var(--primary));
+        }
+
+        .content-section .subtitle {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 4rem;
+            line-height: 1.7;
+        }
+
+        .content-section h2 {
+            font-size: 2.25rem;
+            color: hsl(var(--accent));
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .content-section p,
+        .content-section li {
+            font-size: 1.1rem;
+            color: hsl(var(--muted-foreground));
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .content-section ul {
+            list-style: none;
+            padding-left: 1rem;
+            margin: 2rem 0;
+        }
+
+        .content-section li {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .content-section li::before {
+            content: '✧';
+            position: absolute;
+            left: 0;
+            color: hsl(var(--primary));
+            font-size: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .content-section a {
+            color: hsl(var(--accent));
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .content-section a:hover {
+            text-decoration: underline;
+        }
+
+        .content-section strong {
+            color: hsl(var(--foreground));
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo-link">
+                <h4><span class="text-gradient-primary">Thing</span>dom</h4>
+            </a>
+        </div>
+    </nav>
+
+    <main class="content-section">
+        <div class="container">
+            <h1>The 75% Inquisition</h1>
+            <p class="subtitle">It's a number etched into the mind of almost every student: 75%. It’s the line between
+                safety and peril, the most common attendance requirement in institutions worldwide. But is it truly a
+                magic number, or just an arbitrary rule? Let's investigate.</p>
+
+            <p>To master a system, you must first understand it. Seeing the 75% rule as a mere hurdle to be cleared is a
+                novice's mistake. A true strategist—an alchemist—seeks to understand the *why* behind the rule. This
+                knowledge is what transforms compliance into control.</p>
+
+            <h2>Why Does the 75% Rule Even Exist?</h2>
+            <p>This policy isn't born from a desire to micromanage your life. It's rooted in a combination of
+                pedagogical theory, administrative necessity, and professional preparation.</p>
+            <ul>
+                <li><strong>Learning by Osmosis:</strong> Education isn't just about passively receiving information.
+                    True learning happens in the environment—the questions your classmates ask, the professor's
+                    off-the-cuff remarks, the subtle shift in tone that signals a key concept. By being physically
+                    present, you engage in "learning by osmosis," absorbing knowledge that never makes it into the
+                    lecture notes.</li>
+                <li><strong>Discipline and Accountability:</strong> University is a training ground for the professional
+                    world. A core tenet of any job is simply showing up. Attendance policies are a low-stakes way to
+                    instill the discipline of consistency and accountability, skills that are far more valuable than any
+                    single lecture's content.</li>
+                <li><strong>Accreditation and Compliance:</strong> Often, the rule is not entirely the university's
+                    choice. Educational accrediting bodies and government regulations often mandate a minimum number of
+                    "contact hours" for a course to be considered valid. The 75% rule is a straightforward way for
+                    institutions to prove they are meeting these standards.</li>
+            </ul>
+
+            <h2>The Debate: Is It the *Right* Number?</h2>
+            <p>The 75% figure is a pragmatic compromise. It demands a significant majority of attendance (3 out of every
+                4 classes) while still providing a generous 25% buffer for illness, emergencies, and personal days. It's
+                easy to measure and simple to enforce across thousands of students.</p>
+            <p>However, it's far from perfect. Critics argue that it measures presence, not engagement. A student can be
+                in the room but mentally absent, while another could master the material from home. It can unfairly
+                penalize students with chronic health issues or significant personal responsibilities. The truth is,
+                there is no "perfect" number. 75% is simply the widely accepted equilibrium point between institutional
+                requirements and student flexibility.</p>
+
+            <h2>Beyond Compliance: A Strategic Approach</h2>
+            <p>Don't just aim to meet the 75% target. Instead, view your 25% buffer not as an entitlement to be spent,
+                but as a strategic resource to be managed. This is the core principle of the <a
+                    href="/tools/attendance-calculator.html">Attendance Alchemist</a>.</p>
+            <ul>
+                <li><strong>Front-Load Your Buffer:</strong> Strive for 100% attendance at the start of the semester.
+                    This builds the largest possible buffer, giving you maximum flexibility later on when you might
+                    genuinely need it for an unexpected opportunity or emergency.</li>
+                <li><strong>Triage Your Skips:</strong> Not all classes are equal. Skipping a hands-on lab or a
+                    participation-heavy seminar is far more costly than missing a large lecture where the notes are
+                    posted online. If you must use your buffer, spend it on the classes with the lowest academic impact.
+                </li>
+                <li><strong>Communicate Like a Professional:</strong> If you know you'll be absent, send your professor
+                    a brief, professional email beforehand. This small act of courtesy shows respect and maturity, and
+                    can make a world of difference if you ever find yourself on the borderline of the attendance
+                    requirement.</li>
+            </ul>
+            <p>Ultimately, the 75% rule isn't magic. It's a system. And like any system, it can be navigated with
+                intelligence and foresight. By understanding its purpose and managing your attendance as a strategic
+                asset, you move from being a passive subject to an active master of your academic journey.</p>
+        </div>
+    </main>
+
+</body>
+
+</html>

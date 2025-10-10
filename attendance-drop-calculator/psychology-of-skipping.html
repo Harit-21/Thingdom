@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Siren's Call of 'Just One More Skip' — Thingdom</title>
+    <meta name="description"
+        content="A psychological deep dive into the cognitive biases that make skipping class so tempting, from hyperbolic discounting to the 'what-the-hell' effect, and how to overcome them." />
+    <meta name="author" content="Thingdom" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --background: 240 10% 3.9%;
+            --foreground: 0 0% 98%;
+            --primary: 262 83.3% 57.8%;
+            --primary-foreground: 0 0% 100%;
+            --secondary: 222.2 47.4% 11.2%;
+            --muted: 240 5% 25%;
+            --muted-foreground: 240 5% 65%;
+            --accent: 190 95% 55%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        nav {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid hsl(var(--muted) / 0.5);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo-link {
+            text-decoration: none;
+            color: hsl(var(--foreground));
+        }
+
+        nav h4 {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .text-gradient-primary {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content-section {
+            padding: 6rem 0;
+        }
+
+        .content-section h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: hsl(var(--primary));
+        }
+
+        .content-section .subtitle {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 4rem;
+            line-height: 1.7;
+        }
+
+        .content-section h2 {
+            font-size: 2.25rem;
+            color: hsl(var(--accent));
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .content-section h2 .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: hsl(var(--primary) / 0.5);
+        }
+
+        .content-section p {
+            font-size: 1.1rem;
+            color: hsl(var(--muted-foreground));
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .content-section strong {
+            color: hsl(var(--foreground));
+            font-weight: 600;
+        }
+
+        .content-section a {
+            color: hsl(var(--accent));
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .content-section a:hover {
+            text-decoration: underline;
+        }
+
+        .content-section blockquote {
+            margin: 2rem 0;
+            padding: 0 2rem;
+            border-left: 4px solid hsl(var(--accent));
+        }
+
+        .content-section blockquote p {
+            font-style: italic;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo-link">
+                <h4><span class="text-gradient-primary">Thing</span>dom</h4>
+            </a>
+        </div>
+    </nav>
+
+    <main class="content-section">
+        <div class="container">
+            <h1>The Siren's Call of 'Just One More Skip'</h1>
+            <p class="subtitle">It’s a cold morning. Your bed is a fortress of warmth. A single, seductive thought
+                echoes in your mind: "I can afford to miss one class." It feels rational, harmless. But this thought is
+                not a simple calculation; it's a powerful psychological trap. Let's deconstruct it.</p>
+
+            <p>That whisper isn't about laziness; it's about a series of cognitive biases that are hardwired into our
+                brains. Understanding these mental shortcuts is the first step to mastering them and taking true control
+                of your time.</p>
+
+            <h2>1. The Tyranny of Now: Hyperbolic Discounting</h2>
+            <p><strong>Hyperbolic discounting</strong> is a fancy term for a simple human truth: our brains are wired to
+                crave immediate gratification. A small reward *right now* feels vastly more valuable than a much larger
+                reward in the distant future.</p>
+            <p>The immediate reward of skipping is tangible: an extra hour of sleep, finishing a game, or avoiding a
+                boring lecture. The consequence—a slight dip in your attendance percentage—is a distant, abstract
+                problem for your "future self" to deal with. Your brain discounts the future pain and overvalues the
+                present pleasure. It's the same reason we eat a doughnut despite knowing we have long-term fitness
+                goals. The doughnut is here. The six-pack is not.</p>
+
+            <blockquote>
+                <p>"The future is a fiction. The present is a visceral reality. Your brain will always bet on reality."
+                </p>
+            </blockquote>
+
+            <h2>2. The Domino Effect: The 'What-the-Hell' Phenomenon</h2>
+            <p>Psychologists studying dieting habits discovered a fascinating quirk of human behavior: the
+                "what-the-hell" effect. Once a person on a strict diet breaks their rule by eating a single cookie, they
+                are far more likely to think, "Well, I've already ruined my diet for today, what the hell," and proceed
+                to eat the entire box.</p>
+            <p>The first skip is the hardest. It requires breaking your own rule. But the second skip? The psychological
+                barrier has already been breached. The thought process shifts from "I must not skip" to "I've already
+                skipped before, what's one more?" That single "harmless" skip doesn't just cost you one class; it makes
+                every future decision to skip exponentially easier, setting off a potential domino effect that can wreck
+                your semester.</p>
+
+            <h2>3. The Optimism Trap: Planning Fallacy</h2>
+            <p>The "planning fallacy" is our tendency to chronically underestimate the time, cost, and risks of future
+                actions, while overestimating their benefits. When we skip a class, we tell ourselves, "It's fine, I'll
+                attend every single class for the rest of the semester to make up for it."</p>
+            <p>This is a fantasy. This optimistic "future you" doesn't get sick, doesn't have family emergencies,
+                doesn't get burnt out, and never wakes up feeling unmotivated. We create an idealized plan without
+                accounting for life's inherent chaos. By assuming future perfection, we give ourselves permission to be
+                imperfect now. This makes the decision to skip today feel deceptively low-risk.</p>
+
+            <h2>The Alchemist's Solution: Forging a New Mindset</h2>
+            <p>You can't rewire your brain, but you can give it better tools to work with. Here's how to counter these
+                biases:</p>
+            <ul>
+                <li><strong>Make the Future Concrete:</strong> Don't let the consequences of skipping be an abstract
+                    problem. Use a tool like our <a href="/tools/attendance-calculator.html">Attendance Alchemist</a> to
+                    see the *immediate* numerical impact. Watching your percentage drop from 82% to 79.5% turns a
+                    distant problem into a present reality.</li>
+                <br>
+                <li><strong>Set Bright Lines, Not Vague Goals:</strong> "I'll try not to skip" is a suggestion your
+                    brain will ignore. "I will not allow my attendance to fall below 80%, no matter what" is a hard
+                    rule. This creates a clear tripwire that is psychologically harder to cross.</li>
+                <br>
+                <li><strong>Budget for Chaos:</strong> Acknowledge that you are human and life is unpredictable. Use a
+                    calculator to determine how many classes you can *afford* to miss while staying safe. Treat these as
+                    "sick days" or a strategic buffer. By planning for imperfection, you're less likely to fall victim
+                    to the "what-the-hell" effect when you inevitably need to miss a class.</li>
+                <br>
+            </ul>
+            <p>By understanding these hidden forces, you shift from being a passive victim of your impulses to a
+                strategic commander of your own time. That is the true path of the alchemist.</p>
+        </div>
+    </main>
+
+</body>
+
+</html>

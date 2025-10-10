@@ -548,7 +548,104 @@
             color: #a5d6ff;
         }
 
-        /* --- Footer --- */
+        /* --- Related Articles Section --- */
+        .related-articles {
+            margin-top: 4rem;
+            padding-top: 4rem;
+            border-top: 1px solid hsl(var(--muted) / 0.5);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: hsl(var(--foreground));
+        }
+
+        .section-p{
+            font-weight: 200;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: hsl(var(--foreground));
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .article-card {
+            background-color: hsl(var(--secondary) / 0.1);
+            border: 1px solid hsl(var(--muted) / 0.5);
+            border-radius: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            border-color: hsl(var(--primary));
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .article-card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .article-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: hsl(var(--primary));
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .article-card p {
+            font-size: 0.9rem;
+            color: hsl(var(--muted-foreground));
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .read-more {
+            margin-top: 1rem;
+            font-weight: 600;
+            color: hsl(var(--accent));
+            align-self: flex-start;
+            transition: text-shadow ease-in-out 0.2s;
+            text-shadow: 0 1px 5px var(--shad);
+        }
+
+        .read-more:hover {
+            text-shadow: 0 2px 4px var(--shadhov);
+        }
+
+
+        .read-more .arrow {
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .article-card:hover .arrow {
+            font-size: 1.3rem;
+            font-weight: bolder;
+            transform: translateX(6.5px);
+        }
+
         /* --- Footer --- */
         footer {
             position: relative;
@@ -849,6 +946,43 @@
                 </div>
             </div>
         </section>
+        <div class="related-articles reveal">
+            <div class="container">
+                <h3 class="section-title">Explore the <span class="text-gradient-primary">Resume Forge</span></h3>
+                <p class="section-p">Deep dives into the craft of building a career-defining document.</p>
+
+                <div class="articles-grid">
+                    <a href="./resume-guide/philosophy.html" class="article-card">
+                        <div class="article-card-content">
+                            <span class="article-category">Mindset</span>
+                            <h4>The Forgemaster's Creed</h4>
+                            <p>Before you write a word, you must understand the philosophy. Learn the three core
+                                tenets—Brevity, Impact, and Adaptation—that form the foundation of every great resume.
+                            </p>
+                            <span class="read-more">Read the Creed <span class="arrow">&rarr;</span></span>
+                        </div>
+                    </a>
+                    <a href="./resume-guide/experience.html" class="article-card">
+                        <div class="article-card-content">
+                            <span class="article-category">Craftsmanship</span>
+                            <h4>Forging Your Experience: The STAR Method</h4>
+                            <p>Transform your experience section from a boring list of duties into a compelling showcase
+                                of achievements. This is a deep dive into the legendary STAR method.</p>
+                            <span class="read-more">Master the Method <span class="arrow">&rarr;</span></span>
+                        </div>
+                    </a>
+                    <a href="./resume-guide/anatomy.html" class="article-card">
+                        <div class="article-card-content">
+                            <span class="article-category">Blueprint</span>
+                            <h4>The Blueprint of a Masterpiece</h4>
+                            <p>Deconstruct the six essential sections of a modern resume, from the Header to Education.
+                                This is the complete, interactive schematic for building your document.</p>
+                            <span class="read-more">View the Blueprint <span class="arrow">&rarr;</span></span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer>

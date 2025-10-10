@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aggregate Attendance Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    ::-webkit-scrollbar{
+      display: none;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f7f9fb;
+    }
+
+    .card {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    textarea {
+      min-height: 200px;
+    }
+
+    #max-drop-overlay.show #max-drop-card {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body class="p-4 sm:p-8">
+
+  <div id="app" class="max-w-4xl mx-auto">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 tracking-tight">Attendance Drop Calculator</h1>
+      <p class="text-gray-500 mt-2">Calculate max future absences to stay above a target percentage.</p>
+    </header>
+
+    <div class="card bg-white p-6 sm:p-8 rounded-xl border border-gray-200">
+      <!-- Instructions and Inputs -->
+      <div class="space-y-6">
+
+        <!-- <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Upload CSV or Excel File:</label>
+          <input type="file" id="file-upload" accept=".csv, .xlsx"
+            class="w-full p-2 border border-gray-300 rounded-lg bg-white cursor-pointer"
+            onchange="handleFileUpload(event)">
+          <p class="text-xs text-gray-500 mt-1">Accepted formats: .csv, .xlsx</p>
+        </div> -->
+
+        <!-- Dropzone for file upload -->
+        <div id="dropzone"
+          class="w-full p-6 border-2 border-dashed border-gray-300 rounded-lg bg-white text-center text-gray-500 hover:border-blue-400 transition cursor-pointer">
+          <p class="mb-2 font-medium">Drag and drop a CSV/XLSX file here</p>
+          <p class="text-xs text-gray-400">or click to select a file</p>
+          <input type="file" id="file-upload" accept=".csv,.xlsx" class="hidden" onchange="handleFileUpload(event)">
+        </div>
+
+
+
+        <!-- Target Percentage Input -->
+        <div>
+          <label for="target-percent" class="block text-sm font-medium text-gray-700 mb-2">Target Attendance Percentage
+            (e.g., 65):</label>
+          <input type="number" id="target-percent" value="65" min="1" max="100"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150"
+            oninput="calculateHours()">
+        </div>
+
+        <!-- Data Input Area -->
+        <div>
+          <label for="data-input" class="block text-sm font-medium text-gray-700 mb-2">Paste Attendance Data
+            Here:</label>
+          <p class="text-xs text-gray-500 mb-2">Ensure your data includes columns for 'Present', 'OD', and 'Absent'.</p>
+
+
+          <textarea id="data-input"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-none transition duration-150"
+            placeholder="Paste your table data (tab-separated or space-separated) here..."></textarea>
+        </div>
+
+        <div class="flex justify-center gap-3 mt-2">
+          <!-- Paste -->
+          <button id="paste-btn" aria-label="Paste attendance data from clipboard" title="Paste Attendance Data"
+            class="p-2 text-white text-xl rounded-lg shadow-md hover:from-indigo-600 hover:to-blue-500 transition-transform duration-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            📋
+          </button>
+
+          <!-- Save -->
+          <button onclick="saveProgress()" title="Save Progress"
+            class="p-2 text-white text-xl rounded-lg shadow-md hover:from-emerald-600 hover:to-green-500 transition-transform duration-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-300">
+            💾
+          </button>
+
+          <!-- Resume -->
+          <button onclick="loadProgress()" title="Resume Previous Progress"
+            class="p-2 text-white text-xl rounded-lg shadow-md hover:from-gray-700 hover:to-gray-900 transition-transform duration-200 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-gray-400">
+            ↩️
+          </button>
+        </div>
+
+        <!-- Calculate Button (for clarity, though it auto-updates) -->
+        <button onclick="calculateHours()"
+          class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-200 shadow-md hover:shadow-lg">
+          Calculate Max Missable Hours
+        </button>
+      </div>
+
+      <hr class="my-8 border-gray-200">
+
+      <!-- Results Section -->
+      <div id="results" class="space-y-4">
+        <h2 class="text-2xl font-semibold text-gray-800 border-b pb-2">Results</h2>
+
+        <div id="summary-metrics" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <p class="text-xs text-gray-500">Total Attended</p>
+            <p id="total-attended" class="text-xl font-bold text-green-600">0</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <p class="text-xs text-gray-500">Total Conducted</p>
+            <p id="total-conducted" class="text-xl font-bold text-gray-600">0</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <p class="text-xs text-gray-500">Current %</p>
+            <p id="current-percent" class="text-xl font-bold text-yellow-600">0.00%</p>
+          </div>
+          <div class="bg-blue-100 p-3 rounded-lg border-2 border-blue-400">
+            <p class="text-xs text-blue-700 font-semibold">Max Future Absences</p>
+            <p id="max-drop" class="text-2xl font-extrabold text-blue-600">0</p>
+          </div>
+        </div>
+
+        <div id="message-box" class="mt-6 p-4 rounded-lg text-center font-medium transition duration-300 hidden"
+          role="alert"></div>
+
+        <div id="error-message"
+          class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden transition duration-300 ease-in-out">
+        </div>
+
+        <!-- Custom Attendance Planner -->
+        <div class="mt-6">
+          <label for="custom-attend" class="block text-sm font-medium text-gray-700 mb-2">
+            What If I attend this many future classes:
+          </label>
+          <input type="number" id="custom-attend" class="w-full p-2 border rounded-lg mb-3"
+            placeholder="Enter number of future classes to attend" min="0" oninput="calculateCustomMissable()">
+
+          <div id="custom-missable-result" class="text-gray-800 font-medium mt-2 hidden"></div>
+        </div>
+
+
+      </div>
+
+      <!-- Projection & Visuals Toggle -->
+      <div class="mt-10 flex items-center justify-between">
+        <h2 class="text-xl font-semibold text-gray-800">Projection & Planner</h2>
+        <button onclick="toggleProjection()" class="text-sm text-blue-600 hover:underline">
+          Toggle View
+        </button>
+      </div>
+
+      <div id="projection-container" class="mt-4 hidden">
+        <!-- Input Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Duration Type</label>
+            <select id="duration-type" onchange="updateDurationMode()" class="w-full p-2 border rounded-lg">
+              <option value="weeks">Weeks</option>
+              <option value="days">Days</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Remaining Time</label>
+            <input type="number" id="remaining-time" value="6" class="w-full p-2 border rounded-lg"
+              oninput="calculateHours()" min="1">
+          </div>
+
+          <!-- Conditionally shown -->
+          <div id="classes-per-week-container">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Classes per Week</label>
+            <input type="number" id="classes-per-week" value="18" class="w-full p-2 border rounded-lg"
+              oninput="calculateHours()" min="1">
+          </div>
+
+          <!-- For day-based input -->
+          <div id="days-options" class="hidden md:col-span-2 grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Days per Week</label>
+              <select id="days-per-week" class="w-full p-2 border rounded-lg" onchange="calculateHours()">
+                <option value="6">6 days</option>
+                <option value="5">5 days</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Avg Classes per Day</label>
+              <input type="number" id="classes-per-day" value="3" class="w-full p-2 border rounded-lg" min="1"
+                oninput="calculateHours()">
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Projection Summary -->
+        <div id="projection-output" class="mt-6 bg-gray-100 p-4 rounded-lg hidden">
+          <p class="text-gray-700"><strong>Total Remaining Classes: &nbsp ~</strong> <span
+              id="total-remaining-classes"></span>
+          </p>
+          <p class="text-gray-700"><strong>Classes You Must Attend: &nbsp ~</strong> <span
+              id="required-attendance"></span></p>
+          <p class="text-gray-700"><strong>Classes You Can Skip: &nbsp ~</strong> <span id="allowed-skips"></span></p>
+          <p class="text-gray-700"><strong>Projected Attendance (afterwards): </strong> <span id="projected-percent"
+              class="font-semibold"></span>
+          </p>
+        </div>
+
+        <!-- Progress Graph -->
+        <div class="mt-6 mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Attendance Progress</label>
+          <div class="relative w-full bg-gray-200 rounded-full h-6 overflow-hidden">
+            <div id="attendance-bar"
+              class="absolute top-0 left-0 h-6 bg-green-500 text-white text-xs text-center leading-6 transition-all duration-300"
+              style="width: 0%">0%</div>
+            <div class="absolute top-0 h-6 border-l-2 border-red-500" id="target-marker" style="left: 65%;"></div>
+          </div>
+          <div class="flex justify-between text-xs text-gray-500 mt-1">
+            <span>0%</span>
+            <span>Target</span>
+            <span>100%</span>
+          </div>
+        </div>
+        <div id="simulation-container" class="mt-6 border p-4 rounded bg-gray-50">
+          <h2 class="text-lg font-semibold mb-2">🎯 Simulate Attendance Plan</h2>
+
+          <label for="sim-weeks">Weeks Remaining:</label>
+          <input type="number" id="sim-weeks" min="1" value="6" class="border p-1 w-16 ml-2" />
+
+          <label for="sim-classes-per-week" class="ml-4">Classes/Week:</label>
+          <input type="number" id="sim-classes-per-week" min="1" value="18" class="border p-1 w-16 ml-2" />
+
+          <label for="sim-attend" class="ml-4">Plan to Attend:</label>
+          <input type="number" id="sim-attend" min="0" class="border p-1 w-16 ml-2" />
+
+          <button onclick="simulatePlan()" class="ml-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Simulate
+          </button>
+
+          <div id="simulation-result" class="mt-4 text-sm text-gray-800 hidden">
+            <p>📊 <strong>Projected Attendance:</strong> <span id="sim-projected-percent"></span></p>
+            <p>✅ Classes attended in plan: <span id="sim-total-attend"></span></p>
+            <p>❌ Classes skipped in plan: <span id="sim-total-skip"></span></p>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="py-3">
+
+      <fieldset class="mt-4">
+        <legend class="font-semibold mb-2">What would you like on arrival:</legend>
+
+        <label class="flex items-center gap-2">
+          <input type="radio" name="loadOption" value="resume" id="resume-radio">
+          <span>Automatically resume from last saved</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+          <input type="radio" name="loadOption" value="clipboard" id="clipboard-radio">
+          <span>Automatically paste from clipboard</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+          <input type="radio" name="loadOption" value="none" id="none-radio">
+          <span>Do nothing</span>
+        </label>
+      </fieldset>
+
+    </div>
+  </div>
+
+  <!-- Max Drop Overlay -->
+  <div id="max-drop-overlay" class="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-end justify-center hidden">
+    <div id="max-drop-card"
+      class="w-full max-w-md bg-white rounded-t-3xl p-6 shadow-xl transition-transform duration-500 translate-y-full">
+      <div class="text-center">
+        <div id="lottie-container" class="w-28 h-28 mx-auto mb-4"></div>
+        <h2 class="text-xl font-bold mb-2" id="max-drop-message">Calculating...</h2>
+        <p class="text-gray-600" id="max-drop-details">Please wait...</p>
+        <button onclick="dismissMaxDropOverlay()"
+          class="mt-6 bg-blue-600 text-white px-5 py-2 rounded-full shadow hover:bg-blue-700 transition">Got
+          it!</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"
+    class="fixed top-5 right-5 z-50 hidden items-center gap-2 rounded-lg bg-black px-4 py-2 text-white shadow-md transition-opacity duration-300">
+    ✅ Progress restored automatically.
+  </div>
+
+
+  <script>
+    document.getElementById('data-input').addEventListener('input', calculateHours);
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load the user's sample data to show how it works
+      const sampleData = `Introductory Text
+            This is some metadata
+            #	Subject Code	Subject	Subject Type	Present	OD	Absent	Percentage
+            1	5CDS-01	Data Mining Concepts and Techniques	Lecture	13	0	2	86.67
+            2	5CDS-02	Compiler Design	Lecture	19	0	4	82.61
+            3	5CDS-03	Operating System	Lecture	20	0	3	86.96
+            4	5CDS-04	Data Visualization- R Programming/ Power BI	Lecture	23	0	1	95.83
+            5	5CDS-05	Analysis of Algorithm	Lecture	20	0	4	83.33
+            6	5CDS-11	Fundamentals of Block chain	Lecture	10	0	6	62.50
+            7	5CDS-21	R Programming Lab	Lab	16	0	0	100.00
+            8	5CDS-22	Compiler Design Lab	Lab	16	0	0	100.00
+            9	5CDS-23	Analysis of Algorithm Lab	Lab	16	0	0	100.00
+            10	5CDS-24	Advanced Java Lab	Lab	16	0	0	100.00
+            11	5CDS-30	Industrial Training	Lab	5	0	1	83.33
+            12	CRT	Campus Recruitment Training	Lab	8	0	38	17.39`;
+      document.getElementById('data-input').value = sampleData.trim();
+      calculateHours();
+    });
+
+    function showMessage(type, text) {
+      const messageBox = document.getElementById('message-box');
+      messageBox.innerHTML = text;
+      messageBox.classList.remove('hidden', 'bg-red-100', 'bg-green-100', 'text-red-700', 'text-green-700');
+
+      if (type === 'success') {
+        messageBox.classList.add('bg-green-100', 'text-green-700');
+      } else if (type === 'error') {
+        messageBox.classList.add('bg-red-100', 'text-red-700');
+      }
+    }
+
+    function aggregateRawLogData(allLines) {
+      // 1. Try to find the actual header line
+      let startIndex = 0;
+      let headers = [];
+
+      for (let i = 0; i < allLines.length; i++) {
+        const line = allLines[i].trim();
+        const lowerLine = line.toLowerCase();
+
+        if (lowerLine.includes('marked') && lowerLine.includes('number of hours')) {
+          headers = line.split(/\t| {2,}/).map(h => h.trim()).filter(Boolean);
+          startIndex = i;
+          break;
+        }
+      }
+
+      if (headers.length === 0) {
+        return null; // couldn't find the header line
+      }
+
+      const markedIndex = headers.findIndex(h => h.toLowerCase().includes('marked'));
+      const hoursIndex = headers.findIndex(h => h.toLowerCase().includes('number of hours'));
+      const subjectIndex = headers.findIndex(h => h.toLowerCase().includes('subject'));
+
+      if (markedIndex === -1 || hoursIndex === -1 || subjectIndex === -1) {
+        return null; // required columns missing
+      }
+
+      const subjectStats = {};
+      const dataLines = allLines.slice(startIndex + 1);
+
+      for (const line of dataLines) {
+        const values = line.split(/\t| {2,}/).map(v => v.trim()).filter(Boolean);
+        if (values.length <= Math.max(markedIndex, hoursIndex, subjectIndex)) continue;
+
+        const subject = values[subjectIndex];
+        const marked = values[markedIndex].toUpperCase();
+        const hours = parseFloat(values[hoursIndex]) || 0;
+
+        if (!subjectStats[subject]) {
+          subjectStats[subject] = { Present: 0, OD: 0, Absent: 0 };
+        }
+
+        if (marked === 'P') subjectStats[subject].Present += hours;
+        else if (marked === 'OD') subjectStats[subject].OD += hours;
+        else if (marked === 'A') subjectStats[subject].Absent += hours;
+      }
+
+      // Rebuild aggregated data table
+      const rebuiltLines = ["#\tSubject\tPresent\tOD\tAbsent"];
+      let counter = 1;
+      for (const subject in subjectStats) {
+        const s = subjectStats[subject];
+        rebuiltLines.push(`${counter++}\t${subject}\t${s.Present}\t${s.OD}\t${s.Absent}`);
+      }
+
+      return rebuiltLines.join('\n');
+    }
+
+
+
+    function calculateHours() {
+      const dataInput = document.getElementById('data-input').value.trim();
+      const targetPercentInput = document.getElementById('target-percent').value;
+      const errorElement = document.getElementById('error-message');
+      const resultElements = {
+        attended: document.getElementById('total-attended'),
+        conducted: document.getElementById('total-conducted'),
+        current: document.getElementById('current-percent'),
+        drop: document.getElementById('max-drop')
+      };
+
+      errorElement.classList.add('hidden');
+      document.getElementById('message-box').classList.add('hidden');
+
+      // --- Input Validation ---
+      if (!dataInput) {
+        resultElements.attended.textContent = resultElements.conducted.textContent = resultElements.drop.textContent = '0';
+        resultElements.current.textContent = '0.00%';
+        showMessage('error', 'Please paste your attendance data to begin the calculation.');
+        return;
+      }
+
+      const targetPercentage = parseFloat(targetPercentInput) / 100;
+      if (isNaN(targetPercentage) || targetPercentage <= 0 || targetPercentage > 1) {
+        errorElement.textContent = 'Invalid Target Percentage. Please enter a value between 1 and 100.';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+
+      // --- Data Parsing ---
+      const lines = dataInput.split('\n').filter(line => line.trim() !== '');
+
+      let startRowIndex = 0;
+
+      // Find the first row that contains the header columns "Present", "OD", "Absent"
+      for (let i = 0; i < lines.length; i++) {
+        const headerLine = lines[i].trim().toLowerCase();
+        if (headerLine.includes('present') && headerLine.includes('od') && headerLine.includes('absent')) {
+          startRowIndex = i;
+          break;
+        }
+      }
+
+      // Skip any rows before the valid data
+      const validLines = lines.slice(startRowIndex);
+      const headerLine = validLines[0];
+
+      const separator = headerLine.includes('\t') ? '\t' : ' ';
+      const headers = headerLine.split(separator).map(h => h.trim()).filter(h => h !== '');
+
+      // --- Detect and preprocess raw log format ---
+      // Check full data for raw log format (regardless of where it starts)
+      const isRawLogFormat = lines.some(line =>
+        line.toLowerCase().includes('marked') && line.toLowerCase().includes('number of hours')
+      );
+
+      if (isRawLogFormat) {
+        const aggregatedData = aggregateRawLogData(lines);
+        if (!aggregatedData) {
+          errorElement.textContent = 'Raw data format detected, but required columns are missing.';
+          errorElement.classList.remove('hidden');
+          return;
+        }
+
+        // Replace input and continue processing with aggregated data
+        document.getElementById('data-input').value = aggregatedData;
+
+        // Re-run this function without recursion
+        // const newLines = aggregatedData.split('\n');
+        // lines.splice(0, lines.length, ...newLines);
+        // startRowIndex = 0;
+        // headerLine = newLines[0];
+        // separator = headerLine.includes('\t') ? '\t' : ' ';
+        // headers = headerLine.split(separator).map(h => h.trim()).filter(Boolean);
+        setTimeout(() => calculateHours(), 0);
+        return;
+      }
+
+
+
+
+      // Find index of required columns
+      const presentIndex = headers.findIndex(h => h.toLowerCase().includes('present'));
+      const odIndex = headers.findIndex(h => h.toLowerCase() === 'od' || h.toLowerCase().includes('duty'));
+      const absentIndex = headers.findIndex(h => h.toLowerCase().includes('absent'));
+
+      if (presentIndex === -1 || odIndex === -1 || absentIndex === -1) {
+        errorElement.textContent = 'Could not find required columns: "Present", "OD", and "Absent" in the header row.';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+
+      // --- Aggregate Summation ---
+      let totalAttended = 0;
+      let totalAbsent = 0;
+      let totalConductableClasses = 0;
+
+      for (let i = 1; i < validLines.length; i++) {
+        // Use a regex to split by tabs or one or more spaces
+        const values = validLines[i].split(/\t| {2,}/).map(v => v.trim()).filter(v => v !== '');
+
+        // Ensure the row has enough columns
+        if (values.length > Math.max(presentIndex, odIndex, absentIndex)) {
+          const present = parseFloat(values[presentIndex]) || 0;
+          const od = parseFloat(values[odIndex]) || 0;
+          const absent = parseFloat(values[absentIndex]) || 0;
+
+          totalAttended += (present + od);
+          totalAbsent += absent;
+          totalConductableClasses += (present + od + absent);
+        }
+      }
+
+      // Handle scenario where no data was summed (e.g., non-numeric rows)
+      if (totalConductableClasses === 0) {
+        errorElement.textContent = 'No valid numeric attendance data could be aggregated from the rows.';
+        errorElement.classList.remove('hidden');
+        return;
+      }
+
+      // --- Calculation using the formula derived for future absences ---
+      const numerator = totalAttended - (targetPercentage * totalConductableClasses);
+      const maxDropFloat = numerator / targetPercentage;
+
+      let maxDrop = Math.floor(maxDropFloat);
+
+      if (maxDrop < 0) {
+        maxDrop = 0;
+        const requiredClasses = Math.ceil((targetPercentage * totalConductableClasses - totalAttended) / (1 - targetPercentage));
+
+        showMessage(
+          'error',
+          `Your current aggregate attendance (${(totalAttended / totalConductableClasses * 100).toFixed(2)}%) is below the target of ${(targetPercentage * 100).toFixed(0)}%.<br>
+    👉 You must attend at least <strong>${requiredClasses}</strong> more classes consecutively (without missing) to reach your target.`
+        );
+      }
+      else {
+        const newTotalConducted = totalConductableClasses + maxDrop;
+        const resultingPercent = (totalAttended / newTotalConducted) * 100;
+
+        showMessage('success', `If you miss ${maxDrop} more hours, your aggregate attendance will be ${resultingPercent.toFixed(2)}%, which is just above the ${targetPercentage * 100}% target.`);
+      }
+
+      // --- Update UI ---
+      resultElements.attended.textContent = totalAttended.toFixed(0);
+      resultElements.conducted.textContent = totalConductableClasses.toFixed(0);
+      resultElements.current.textContent = `${(totalAttended / totalConductableClasses * 100).toFixed(2)}%`;
+      resultElements.drop.textContent = maxDrop.toFixed(0);
+
+
+      if (!isNaN(maxDrop)) {
+        showMaxDropOverlay(maxDrop);
+      }
+
+      // --- Future Projection Calculation ---
+      const durationType = document.getElementById('duration-type')?.value;
+      const remainingTime = parseInt(document.getElementById('remaining-time')?.value) || 0;
+      let classesPerWeek = 0;
+
+      if (durationType === 'weeks') {
+        classesPerWeek = parseInt(document.getElementById('classes-per-week')?.value) || 0;
+      } else if (durationType === 'days') {
+        const daysPerWeek = parseInt(document.getElementById('days-per-week')?.value) || 0;
+        const classesPerDay = parseFloat(document.getElementById('classes-per-day')?.value) || 0;
+        classesPerWeek = daysPerWeek * classesPerDay;
+      }
+
+      const projectionOutput = document.getElementById('projection-output');
+
+      if (remainingTime > 0 && classesPerWeek > 0) {
+        const totalRemainingClasses = remainingTime * classesPerWeek;
+        const totalRequiredAttendance = Math.ceil((totalConductableClasses + totalRemainingClasses) * targetPercentage);
+        const classesNeededToAttend = Math.max(0, totalRequiredAttendance - totalAttended);
+        const possibleSkips = Math.max(0, totalRemainingClasses - classesNeededToAttend);
+        const finalAttended = totalAttended + classesNeededToAttend;
+        const finalConducted = totalConductableClasses + totalRemainingClasses;
+        const projectedPercentage = ((finalAttended / finalConducted) * 100).toFixed(2);
+
+        const projectedPercentEl = document.getElementById('projected-percent');
+        projectedPercentEl.textContent = `${projectedPercentage}%`;
+
+        // Color-code the percentage
+        if (parseFloat(projectedPercentage) >= targetPercentage * 100) {
+          projectedPercentEl.classList.remove('text-red-600');
+          projectedPercentEl.classList.add('text-green-600');
+        } else {
+          projectedPercentEl.classList.remove('text-green-600');
+          projectedPercentEl.classList.add('text-red-600');
+        }
+
+        // Display warning message if not possible to meet target
+        if (classesNeededToAttend > totalRemainingClasses) {
+          showMessage('error', `⚠️ Even if you attend all remaining ${totalRemainingClasses} classes, your attendance will be only ${projectedPercentage}%. You cannot reach the ${targetPercentage * 100}% target.`);
+        }
+
+
+        projectionOutput.classList.remove('hidden');
+        document.getElementById('total-remaining-classes').textContent = totalRemainingClasses;
+        document.getElementById('required-attendance').textContent = classesNeededToAttend;
+        document.getElementById('allowed-skips').textContent = possibleSkips;
+      } else {
+        projectionOutput.classList.add('hidden');
+      }
+
+
+      // --- Update Progress Graph ---
+      const progressBar = document.getElementById('attendance-bar');
+      const marker = document.getElementById('target-marker');
+      const currentPercent = (totalAttended / totalConductableClasses) * 100;
+      const targetPercent = targetPercentage * 100;
+
+      progressBar.style.width = `${Math.min(currentPercent, 100)}%`;
+      progressBar.textContent = `${currentPercent.toFixed(1)}%`;
+      progressBar.classList.remove('bg-green-500', 'bg-red-500');
+      progressBar.classList.add(currentPercent >= targetPercent ? 'bg-green-500' : 'bg-red-500');
+
+      marker.style.left = `${targetPercent}%`;
+
+
+
+
+      // --- Future Projection Calculation ---
+      // const durationType = document.getElementById('duration-type').value;
+      // const remainingTime = parseInt(document.getElementById('remaining-time').value) || 0;
+      // const classesPerUnit = parseInt(document.getElementById('classes-per-unit').value) || 0;
+
+      // const totalRemainingClasses = remainingTime * classesPerUnit;
+
+      // // Required total attendance to meet target
+      // const totalRequiredAttendance = Math.ceil((totalConductableClasses + totalRemainingClasses) * targetPercentage);
+
+      // // Remaining required attendance
+      // const classesNeededToAttend = Math.max(0, totalRequiredAttendance - totalAttended);
+
+      // // Allowed absences = Remaining classes - required attendance in remaining
+      // const possibleSkips = Math.max(0, totalRemainingClasses - classesNeededToAttend);
+
+      // // Update UI
+      // document.getElementById('projection-output').classList.remove('hidden');
+      // document.getElementById('total-remaining-classes').textContent = totalRemainingClasses;
+      // document.getElementById('required-attendance').textContent = classesNeededToAttend;
+      // document.getElementById('allowed-skips').textContent = possibleSkips;
+
+
+
+    }
+
+    function calculateCustomMissable() {
+      const totalAttended = parseFloat(document.getElementById('total-attended').textContent) || 0;
+      const totalConducted = parseFloat(document.getElementById('total-conducted').textContent) || 0;
+      const targetPercentage = parseFloat(document.getElementById('target-percent').value) / 100;
+
+      const customAttendInput = parseInt(document.getElementById('custom-attend').value) || 0;
+      const outputEl = document.getElementById('custom-missable-result');
+
+      // Hide initially
+      outputEl.classList.add('hidden');
+
+      if (customAttendInput <= 0 || isNaN(customAttendInput)) return;
+
+      // Formula:
+      // Let x = additional classes you plan to attend
+      // Let y = number of additional classes you can afford to miss
+      // Then: (totalAttended + x) / (totalConducted + x + y) >= targetPercentage
+      // Solve for y:
+      // y <= ((totalAttended + x) - targetPercentage * (totalConducted + x)) / targetPercentage
+
+      const numerator = (totalAttended + customAttendInput) - (targetPercentage * (totalConducted + customAttendInput));
+      const maxSkips = Math.floor(numerator / targetPercentage);
+
+      if (maxSkips < 0) {
+        outputEl.textContent = `⚠️ Even after attending ${customAttendInput} more classes, you cannot reach ${targetPercentage * 100}% attendance.`;
+        outputEl.classList.remove('text-gray-800');
+        outputEl.classList.add('text-red-600');
+      } else {
+        const projectedConducted = totalConducted + customAttendInput + maxSkips;
+        const projectedAttended = totalAttended + customAttendInput;
+        const projectedPercent = (projectedAttended / projectedConducted) * 100;
+
+        const maxFutureAbsence = parseInt(document.getElementById('max-drop')?.textContent) || 0;
+
+        outputEl.innerHTML = `✅ If you attend <strong>${customAttendInput}</strong> more classes, you can afford to miss <strong>${maxSkips}</strong> classes <em>(instead of ${maxFutureAbsence})</em>.<br>
+        🧾 According to this, you will have attended <strong>${projectedAttended}</strong> out of <strong>${projectedConducted}</strong> classes.<br>
+        📊 Projected Attendance: <strong>${projectedPercent.toFixed(2)}%</strong>`;
+        outputEl.classList.remove('text-red-600');
+        outputEl.classList.add('text-gray-800');
+      }
+
+      outputEl.classList.remove('hidden');
+    }
+
+    function simulatePlan() {
+      const attended = parseFloat(document.getElementById('total-attended').textContent) || 0;
+      const conducted = parseFloat(document.getElementById('total-conducted').textContent) || 0;
+      const target = parseFloat(document.getElementById('target-percent').value) || 75;
+
+      const simWeeks = parseInt(document.getElementById('sim-weeks').value) || 0;
+      const simClassesPerWeek = parseInt(document.getElementById('sim-classes-per-week').value) || 0;
+      const simPlanAttend = parseInt(document.getElementById('sim-attend').value) || 0;
+
+      const simTotal = simWeeks * simClassesPerWeek;
+
+      if (simPlanAttend < 0) {
+        showMessage('error', `Planned attendance cannot be negative. You can't un-attend classes!`);
+        document.getElementById('simulation-result').classList.add('hidden');
+        return;
+      }
+
+      if (simPlanAttend > simTotal) {
+        showMessage('error', `You cannot attend ${simPlanAttend} classes — only ${simTotal} are possible in ${simWeeks} weeks.`);
+        document.getElementById('simulation-result').classList.add('hidden');
+        return;
+      }
+
+      const simPlanSkip = Math.max(0, simTotal - simPlanAttend);
+
+      const projectedAttended = attended + simPlanAttend;
+      const projectedConducted = conducted + simTotal;
+      const projectedPercent = (projectedAttended / projectedConducted) * 100;
+
+      // Update the UI
+      document.getElementById('sim-total-attend').textContent = simPlanAttend;
+      document.getElementById('sim-total-skip').textContent = simPlanSkip;
+      document.getElementById('sim-projected-percent').textContent = projectedPercent.toFixed(2) + '%';
+
+      const percentEl = document.getElementById('sim-projected-percent');
+      percentEl.classList.remove('text-red-600', 'text-green-600');
+      percentEl.classList.add(projectedPercent >= target ? 'text-green-600' : 'text-red-600');
+
+      document.getElementById('simulation-result').classList.remove('hidden');
+    }
+
+    function showWelcomeOverlay(maxAbsences) {
+      const overlay = document.getElementById('welcome-overlay');
+      const message = document.getElementById('overlay-message');
+
+      message.innerHTML = `You can still miss <strong>${maxAbsences}</strong> classes and stay above your target attendance.`;
+
+      overlay.classList.remove('hidden');
+      overlay.classList.add('animate-fadeIn');
+    }
+
+    function closeOverlay() {
+      const overlay = document.getElementById('welcome-overlay');
+      overlay.classList.add('hidden');
+      localStorage.setItem('overlayShown', 'true');
+    }
+
+
+    function toggleProjection() {
+      const container = document.getElementById('projection-container');
+      container.classList.toggle('hidden');
+    }
+
+    function updateDurationMode() {
+      const durationType = document.getElementById('duration-type').value;
+      const weekInput = document.getElementById('classes-per-week-container');
+      const dayOptions = document.getElementById('days-options');
+
+      if (durationType === 'weeks') {
+        weekInput.classList.remove('hidden');
+        dayOptions.classList.add('hidden');
+      } else {
+        weekInput.classList.add('hidden');
+        dayOptions.classList.remove('hidden');
+      }
+
+      calculateHours();
+    }
+
+    // Dropzone Logic
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-upload');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-blue-500', 'bg-blue-50');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    });
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    }
+
+    function handleFile(file) {
+      const errorElement = document.getElementById('error-message');
+      errorElement.classList.add('hidden');
+      errorElement.textContent = '';
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      const reader = new FileReader();
+
+      if (ext === 'csv') {
+        reader.onload = function (e) {
+          const text = e.target.result;
+          document.getElementById('data-input').value = text.trim();
+          calculateHours();
+        };
+        reader.readAsText(file);
+      } else if (ext === 'xlsx') {
+        reader.onload = function (e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+
+            if (!workbook.SheetNames.length) {
+              throw new Error("No sheets found in Excel file.");
+            }
+
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const csvText = XLSX.utils.sheet_to_csv(firstSheet);
+
+            if (!csvText.trim()) {
+              throw new Error("Excel sheet appears to be empty or improperly formatted.");
+            }
+
+            document.getElementById('data-input').value = csvText.trim();
+            calculateHours();
+          } catch (error) {
+            showError(`Error reading Excel file: ${error.message}`);
+          }
+        };
+        reader.onerror = function () {
+          showError("Failed to read the file. Please try again or use a different file.");
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        showError('Unsupported file format. Please upload a .csv or .xlsx file.');
+      }
+    }
+
+    function showError(message) {
+      const errorElement = document.getElementById('error-message');
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+    }
+
+    function saveProgress() {
+      const data = {
+        attendanceData: document.getElementById('data-input').value,
+        targetPercent: document.getElementById('target-percent').value,
+        durationType: document.getElementById('duration-type').value,
+        remainingTime: document.getElementById('remaining-time').value,
+        classesPerWeek: document.getElementById('classes-per-week').value,
+        daysPerWeek: document.getElementById('days-per-week').value,
+        classesPerDay: document.getElementById('classes-per-day').value
+      };
+
+      localStorage.setItem('attendanceProgress', JSON.stringify(data));
+      showToast('✅ Progress saved! You can resume later using the "↩️ Resume" button.');
+    }
+
+    function loadProgress() {
+      const saved = localStorage.getItem('attendanceProgress');
+      if (!saved) {
+        showToast('⚠️ No saved progress found.');
+        return;
+      }
+
+      const data = JSON.parse(saved);
+
+      document.getElementById('data-input').value = data.attendanceData || '';
+      document.getElementById('target-percent').value = data.targetPercent || 65;
+      document.getElementById('duration-type').value = data.durationType || 'weeks';
+      document.getElementById('remaining-time').value = data.remainingTime || 6;
+      document.getElementById('classes-per-week').value = data.classesPerWeek || 18;
+      document.getElementById('days-per-week').value = data.daysPerWeek || 6;
+      document.getElementById('classes-per-day').value = data.classesPerDay || 3;
+
+      updateDurationMode();  // Update visibility of day/week input modes
+      calculateHours();      // Recalculate everything with loaded data
+    }
+
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex'); // Use flex to show it
+
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, duration);
+    }
+
+    // On change, save the selected option
+    document.querySelectorAll('input[name="loadOption"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        localStorage.setItem('loadPreference', radio.value);
+      });
+    });
+
+    window.addEventListener('load', async () => {
+      const preference = localStorage.getItem('loadPreference') || 'none';
+
+      if (preference === 'resume') {
+        const saved = localStorage.getItem('attendanceProgress');
+        if (saved) {
+          loadProgress();
+          showToast("✅ Progress restored automatically.");
+        }
+
+      } else if (preference === 'clipboard') {
+        try {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+              document.getElementById('data-input').value = text;
+              calculateHours?.();
+              showToast("📋 Text pasted from clipboard.");
+            }
+          }
+        } catch (err) {
+          console.log('Clipboard read failed or denied:', err);
+        }
+      }
+
+      // If preference is 'none', do nothing
+    });
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const preference = localStorage.getItem('loadPreference') || 'none';
+      const radio = document.querySelector(`input[name="loadOption"][value="${preference}"]`);
+      if (radio) radio.checked = true;
+    });
+
+
+    document.getElementById('paste-btn').addEventListener('click', async () => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            const dataInput = document.getElementById('data-input');
+            dataInput.value = text;
+            calculateHours();  // Run your calculation function after pasting
+          }
+        } else {
+          alert('Clipboard API not supported in this browser.');
+        }
+      } catch (err) {
+        alert('Failed to read clipboard contents: ' + err);
+      }
+    });
+
+    function showMaxDropOverlay(maxDropValue) {
+      // Only show once per session
+      const prevDrop = sessionStorage.getItem('prevMaxDrop');
+      if (prevDrop !== null && parseInt(prevDrop) === maxDropValue) return;
+      sessionStorage.setItem('prevMaxDrop', maxDropValue);
+
+      document.getElementById('data-input').addEventListener('input', () => {
+        sessionStorage.removeItem('prevMaxDrop');
+      });
+
+
+      const overlay = document.getElementById('max-drop-overlay');
+      const card = document.getElementById('max-drop-card');
+      const message = document.getElementById('max-drop-message');
+      const details = document.getElementById('max-drop-details');
+      const lottieContainer = document.getElementById('lottie-container');
+
+      // Set message and emoji based on maxDrop
+      if (maxDropValue >= 5) {
+        message.innerHTML = `🎉😎 Great News!`;
+        details.innerHTML = `You can afford to miss <strong>${maxDropValue}</strong> more classes. Keep it up!`;
+
+        loadLottie(lottieContainer, 'https://assets7.lottiefiles.com/packages/lf20_jtbfg2nb.json'); // confetti
+      } else if (maxDropValue > 0) {
+        message.innerHTML = `⚠️😬 Heads Up`;
+        details.innerHTML = `Only <strong>${maxDropValue}</strong> skips left. Plan wisely.`;
+
+        loadLottie(lottieContainer, 'https://assets1.lottiefiles.com/private_files/lf30_hxartdls.json'); // warning
+      } else {
+        message.innerHTML = `❌🚨 No More Skips!`;
+        details.innerHTML = `You're at your limit. Attend all upcoming classes to stay safe.`;
+
+        loadLottie(lottieContainer, 'https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json'); // alert
+      }
+
+      overlay.classList.remove('hidden');
+      setTimeout(() => overlay.classList.add('show'), 50); // animate card in
+
+      sessionStorage.setItem('shownMaxDropOverlay', 'true'); // prevent repeat in same session
+    }
+
+    function dismissMaxDropOverlay() {
+      const overlay = document.getElementById('max-drop-overlay');
+      overlay.classList.remove('show');
+      setTimeout(() => overlay.classList.add('hidden'), 500);
+    }
+
+    function loadLottie(container, url) {
+      container.innerHTML = ''; // clear previous
+      lottie.loadAnimation({
+        container: container,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: url
+      });
+    }
+
+
+  </script>
+</body>
+
+</html>
