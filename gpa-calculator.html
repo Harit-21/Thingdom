@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Alchemist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js`;
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        :root {
+            --bg-light: #f5f7fa;
+            --bg-dark: #0f172a;
+            --card-light: rgba(255, 255, 255, 0.5);
+            --card-dark: rgba(30, 41, 59, 0.5);
+            --border-light: rgba(209, 213, 219, 0.8);
+            --border-dark: rgba(71, 85, 105, 0.5);
+            --shadow-light: rgba(31, 38, 135, 0.1);
+            --shadow-dark: rgba(59, 130, 246, 0.2);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+
+        /* --- Scrollbar Styling --- */
+
+        /* Hide scrollbar from custom dropdown but keep it scrollable */
+        .custom-options::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+
+        .custom-options {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* Style the main page scrollbar for Webkit browsers (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(107, 114, 128, 0.7);
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background-color: rgba(100, 116, 139, 0.5);
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(148, 163, 184, 0.7);
+        }
+
+        .dark html {
+            scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            transition: background 0.5s ease;
+        }
+
+        .dark body {
+            background-color: var(--bg-dark);
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+        }
+
+        .glass-card {
+            background: var(--card-light);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            box-shadow: 0 8px 32px 0 var(--shadow-light);
+            transition: background 0.3s ease, border 0.3s ease;
+        }
+
+        .dark .glass-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 8px 32px 0 var(--shadow-dark);
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #2563eb, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .semester-card.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+
+        .drag-handle {
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            border: 2px dashed var(--border-light);
+            border-radius: 0.75rem;
+            color: #6b7280;
+        }
+
+        .no-courses-message {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #9ca3af;
+        }
+
+        .dark .empty-state {
+            border-color: var(--border-dark);
+            color: #9ca3af;
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(209, 213, 219, 0.8);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+            border-color: #3b82f6 !important;
+        }
+
+        .dark .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #f9fafb;
+        }
+
+        .dark .input-field:focus {
+            box-shadow: 0 0 0 3px hsl(280 85% 68% / 0.4);
+            border-color: hsl(280 85% 68%) !important;
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dark .gradient-text {
+            background: linear-gradient(135deg, hsl(280 85% 68%), hsl(190 95% 55%));
+            -webkit-background-clip: text;
+            animation: gradient-shift 6s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient-shift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-select-container {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-select-trigger {
+            position: relative;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .custom-select-trigger::after {
+            content: '▼';
+            font-size: 0.6em;
+            color: #9ca3af;
+            transform: translateY(2px);
+        }
+
+        .custom-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 0.375rem;
+            margin-top: 0.25rem;
+            max-height: 165px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(7px);
+        }
+
+        .z-index-elevated {
+            position: relative;
+            z-index: 99 !important;
+        }
+
+        .dark .custom-options {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .custom-option {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .custom-option:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .custom-option.selected {
+            background: rgba(59, 130, 246, 0.4);
+            font-weight: 600;
+        }
+
+        /* Responsive Table Styles */
+        @media (max-width: 640px) {
+            .responsive-table thead {
+                display: none;
+            }
+
+            .responsive-table tr {
+                display: block;
+                border-bottom: 2px solid var(--border-light);
+                padding-bottom: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .dark .responsive-table tr {
+                border-color: var(--border-dark);
+            }
+
+            .responsive-table td {
+                display: block;
+                text-align: right;
+                padding: 0.5rem 0;
+            }
+
+            .responsive-table td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 600;
+                color: #6b7280;
+            }
+
+            .dark .responsive-table td::before {
+                color: #9ca3af;
+            }
+
+            .responsive-table td:last-child {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="py-8 px-4 bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-200">
+
+    <div id="app" class="max-w-7xl mx-auto space-y-8">
+        <header class="flex justify-between items-center" style="animation: fadeIn 0.6s ease-out;">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight gradient-text">GPA Alchemist</h1>
+                <p class="text-gray-500 dark:text-gray-400 mt-1">Transform Grades into Gold Standard Insights.</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="undo-btn" title="Undo (Ctrl+Z)"
+                    class="control-btn p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 15l-3-3m0 0l3-3m-3 3h8a5 5 0 015 5v1"></path>
+                    </svg>
+                </button>
+                <button id="redo-btn" title="Redo (Ctrl+Y)"
+                    class="control-btn p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 15l3-3m0 0l-3-3m3 3H5a5 5 0 00-5 5v1"></path>
+                    </svg>
+                </button>
+                <button id="export-btn" title="Export Data"
+                    class="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                </button>
+                <label for="import-file" id="import-btn" title="Import Data"
+                    class="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                </label>
+                <input type="file" id="import-file" class="hidden" accept=".json">
+                <button id="clear-data-btn" title="Clear All Saved Data"
+                    class="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-700/20 hover:text-red-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <button id="theme-toggle" type="button"
+                    class="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z"
+                            fill-rule="evenodd" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div id="upload-section" class="glass-card p-6">
+            <h2 class="text-xl font-bold mb-2">⚡ Quick Calculate</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Upload your official RTU result PDF to automatically
+                populate a semester.</p>
+            <div id="dropzone"
+                class="mt-4 flex justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-100/25 px-6 py-10 cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                    </svg>
+                    <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-300">
+                        <label for="pdf-upload"
+                            class="relative font-semibold text-blue-600 dark:text-blue-400 focus-within:outline-none hover:text-blue-500">
+                            <span>Upload a PDF file</span>
+                            <input id="pdf-upload" name="pdf-upload" type="file" class="sr-only" accept=".pdf">
+                        </label>
+                        <p class="pl-1">or drag and drop</p>
+                    </div>
+                    <p id="upload-status" class="text-xs leading-5 text-gray-500 dark:text-gray-400">PDF only, up to
+                        10MB</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="cgpa-card" class="glass-card p-6 flex flex-col justify-center items-center"
+                style="animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <h2 class="text-lg font-semibold text-gray-600 dark:text-gray-300">Cumulative GPA (CGPA)</h2>
+                <p id="cgpa-display" class="text-6xl font-extrabold text-blue-600 dark:text-blue-400 mt-2">0.00</p>
+            </div>
+            <div id="stats-card" class="glass-card p-6"
+                style="animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-4">Key Statistics</h3>
+                <div id="key-stats-container" class="space-y-3 text-sm"></div>
+            </div>
+            <div id="sgpa-trend-card" class="glass-card p-6 md:col-span-2"
+                style="animation: scaleIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <h3 class="font-semibold text-center mb-4 text-gray-700 dark:text-gray-200">SGPA Trend</h3>
+                <div class="relative h-64"><canvas id="sgpa-trend-chart"></canvas></div>
+            </div>
+            <div id="grade-dist-card" class="glass-card p-6 md:col-span-2"
+                style="animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <h3 class="font-semibold text-center mb-4 text-gray-700 dark:text-gray-200">Overall Grade Distribution
+                </h3>
+                <div class="relative h-64"><canvas id="grade-dist-chart"></canvas></div>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold mt-10 border-b pb-2 border-gray-300 dark:border-gray-700">Semester Data</h2>
+        <div id="semesters-container" class="space-y-6"></div>
+        <div class="text-center">
+            <button id="add-semester-btn" class="btn btn-primary">Add Semester Manually</button>
+        </div>
+
+        <div id="planner-section" class="glass-card p-8 mt-10" style="animation: fadeIn 0.8s ease-out;">
+            <h2 class="text-2xl font-bold mb-4">🔮 "What If?" Planner</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Project your future CGPA. Enter your target grades for
+                upcoming semesters to see the outcome.</p>
+            <div id="planner-semesters-container" class="space-y-4"></div>
+            <div class="flex items-center justify-between mt-6">
+                <button id="add-planner-semester-btn"
+                    class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Add future
+                    semester</button>
+                <div class="text-right">
+                    <p class="text-gray-600 dark:text-gray-300">Projected CGPA:</p>
+                    <p id="projected-cgpa-display" class="text-4xl font-bold">0.00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <datalist id="course-suggestions">
+    </datalist>
+
+    <script>
+        const GRADE_POINTS = { "A++": 10, "A+": 9, "A": 8.5, "B+": 8, "B": 7.5, "C+": 7, "C": 6.5, "D+": 6, "D": 5.5, "E+": 5, "E": 4, "F": 0 };
+        const GRADES = Object.keys(GRADE_POINTS);
+        const COURSE_CREDIT_MAP = {
+            '3CDS1-02': 2, '3CDS2-01': 3, '3CDS3-04': 3, '3CDS4-05': 3, '3CDS4-06': 3,
+            '3CDS4-07': 3, '3CDS4-21': 1.5, '3CDS4-22': 1.5, '3CDS4-23': 1.5, '3CDS4-24': 1.5,
+            '3CDS7-30': 1, 'FEC09': 0.5, '2FY1-05': 2, '2FY1-23': 1, '2FY2-01': 4, '2FY2-03': 3,
+            '2FY2-21': 1.5, '2FY3-07': 3, '2FY3-09': 3, '2FY3-25': 1.5, '2FY3-27': 1.5,
+            '2FY3-29': 1.5, 'FEC02': 0.5, '1FY1-04': 2, '1FY1-22': 1, '1FY2-01': 4, '1FY2-02': 4, '1FY2-20': 1, '1FY3-06': 2, '1FY3-08': 2, '1FY3-24': 1.5, '1FY3-26': 1, '1FY3-28': 1.5, 'FEC01': 0.5, '4CDS1-03': 2, '4CDS2-01': 3, '4CDS3-04': 3, '4CDS4-05': 3, '4CDS4-06': 3, '4CDS4-07': 3, '4CDS4-21': 1, '4CDS4-22': 1.5, '4CDS4-23': 1.5, '4CDS4-24': 1, '4CDS4-25': 1, 'FEC24': 0.5
+        };
+        let state = { semesters: [], plannerSemesters: [] };
+        let gradeDistChart = null, sgpaTrendChart = null;
+        let debounceTimer;
+        const debounce = (func, delay) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(func, delay);
+        };
+
+        // --- HISTORY (UNDO/REDO) MANAGER ---
+        const historyManager = {
+            history: [],
+            currentIndex: -1,
+            init(initialState) {
+                this.history = [JSON.parse(JSON.stringify(initialState))];
+                this.currentIndex = 0;
+                updateHistoryButtons();
+            },
+            pushState(newState) {
+                // Clear redo history if we're not at the end
+                if (this.currentIndex < this.history.length - 1) {
+                    this.history = this.history.slice(0, this.currentIndex + 1);
+                }
+                this.history.push(JSON.parse(JSON.stringify(newState)));
+                this.currentIndex++;
+                updateHistoryButtons();
+                saveData(); // Save state on every meaningful change
+            },
+            undo() {
+                if (this.canUndo()) {
+                    this.currentIndex--;
+                    state = JSON.parse(JSON.stringify(this.history[this.currentIndex]));
+                    renderApp();
+                    updateHistoryButtons();
+                    saveData();
+                }
+            },
+            redo() {
+                if (this.canRedo()) {
+                    this.currentIndex++;
+                    state = JSON.parse(JSON.stringify(this.history[this.currentIndex]));
+                    renderApp();
+                    updateHistoryButtons();
+                    saveData();
+                }
+            },
+            canUndo() { return this.currentIndex > 0; },
+            canRedo() { return this.currentIndex < this.history.length - 1; }
+        };
+        // DOM Elements
+        const undoBtn = document.getElementById('undo-btn');
+        const redoBtn = document.getElementById('redo-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const importFile = document.getElementById('import-file');
+        const semestersContainer = document.getElementById('semesters-container');
+        const addSemesterBtn = document.getElementById('add-semester-btn');
+        const cgpaDisplay = document.getElementById('cgpa-display');
+        const plannerContainer = document.getElementById('planner-semesters-container');
+        const addPlannerBtn = document.getElementById('add-planner-semester-btn');
+        const projectedCgpaDisplay = document.getElementById('projected-cgpa-display');
+        const clearDataBtn = document.getElementById('clear-data-btn');
+        const pdfUploadInput = document.getElementById('pdf-upload');
+        const dropzone = document.getElementById('dropzone');
+        const uploadStatus = document.getElementById('upload-status');
+        const keyStatsContainer = document.getElementById('key-stats-container');
+
+        function exportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gpa_alchemist_data_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    // Basic validation
+                    if (importedState && Array.isArray(importedState.semesters)) {
+                        state = importedState;
+                        // Ensure backward compatibility for new features
+                        state.semesters.forEach(s => {
+                            if (s.isCollapsed === undefined) s.isCollapsed = false;
+                        });
+                        historyManager.pushState(state);
+                        renderApp();
+                    } else {
+                        alert('Invalid data file format.');
+                    }
+                } catch (error) {
+                    alert('Error reading or parsing the file.');
+                    console.error("Import error:", error);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input so same file can be loaded again
+        }
+
+        // Helper to update Undo/Redo button states
+        function updateHistoryButtons() {
+            undoBtn.disabled = !historyManager.canUndo();
+            redoBtn.disabled = !historyManager.canRedo();
+        }
+
+        function toggleSemesterCollapse(semId) {
+            const sem = state.semesters.find(s => s.id === semId);
+            if (sem) {
+                sem.isCollapsed = !sem.isCollapsed;
+                // This is a UI preference, so we save it but don't add to undo/redo history.
+                saveData();
+                renderApp();
+            }
+        }
+
+        // --- PDF PARSING ---
+        async function parsePdf(file) {
+            uploadStatus.textContent = 'Reading PDF...';
+            try {
+                const fileReader = new FileReader();
+                fileReader.onload = async function () {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let fullText = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        // Reconstruct lines more carefully
+                        let lastY = -1;
+                        let lineText = '';
+                        for (const item of textContent.items) {
+                            if (lastY !== -1 && item.transform[5] !== lastY) {
+                                fullText += lineText.trim() + '\n';
+                                lineText = '';
+                            }
+                            lineText += item.str + ' ';
+                            lastY = item.transform[5];
+                        }
+                        fullText += lineText.trim() + '\n';
+                    }
+
+                    uploadStatus.textContent = 'Analyzing content...';
+                    const courses = [];
+                    const lines = fullText.split('\n');
+
+                    // Regex to specifically find RTU course codes
+                    const courseCodeRegex = /\b(\d?[A-Z]{2,}\d?-\d{2,}|[A-Z]+\d{2,})\b/;
+                    let tableStarted = false;
+
+                    for (const line of lines) {
+                        if (line.includes("COURSE TITLE") && line.includes("COURSE CODE")) {
+                            tableStarted = true;
+                            continue;
+                        }
+                        if (line.includes("REMARKS:")) {
+                            tableStarted = false;
+                            break;
+                        }
+                        if (!tableStarted || line.trim().length < 5) continue;
+
+                        const parts = line.trim().split(/\s+/);
+                        if (parts.length < 3) continue; // Skip lines that are too short
+
+                        // 1. Find the grade from the end of the line
+                        let grade = '';
+                        let gradeIndex = -1;
+                        for (let i = parts.length - 1; i >= 0; i--) {
+                            if (GRADE_POINTS.hasOwnProperty(parts[i])) {
+                                grade = parts[i];
+                                gradeIndex = i;
+                                break;
+                            }
+                        }
+
+                        // 2. Find the course code using the regex
+                        let courseCode = '';
+                        let codeIndex = -1;
+                        // Search only in parts before the grade
+                        const searchParts = (gradeIndex !== -1) ? parts.slice(0, gradeIndex) : parts;
+                        for (let i = 0; i < searchParts.length; i++) {
+                            if (courseCodeRegex.test(searchParts[i])) {
+                                courseCode = searchParts[i];
+                                codeIndex = i;
+                                // We take the first match as it's most reliable
+                                break;
+                            }
+                        }
+
+                        // 3. If we found a grade and a code, the rest is the name
+                        if (grade && courseCode && codeIndex !== -1) {
+                            const courseName = parts.slice(0, codeIndex).join(' ');
+
+                            // Final validation to ensure we're not grabbing garbage
+                            if (courseName.length > 2) {
+                                courses.push({
+                                    id: `course-${Date.now()}-${courses.length}`,
+                                    name: courseName,
+                                    credits: COURSE_CREDIT_MAP[courseCode] || "", // Automatically fill credits if available
+                                    grade: grade
+                                });
+                            }
+                        }
+                    }
+
+                    if (courses.length > 0) {
+                        const semMatch = fullText.match(/B\.\s*Tech\s+(I{1,3}V?)\s+SEM/);
+                        const semName = semMatch ? `Semester ${semMatch[1]} (from PDF)` : `Uploaded Result ${new Date().toLocaleTimeString()}`;
+
+                        const newSemester = {
+                            id: `sem-${Date.now()}`,
+                            name: semName,
+                            courses: courses,
+                            sgpa: calculateSGPA(courses),
+                            isCollapsed: false
+                        };
+
+                        state.semesters.push(newSemester);
+                        historyManager.pushState(state);
+                        renderApp();
+
+                        setTimeout(() => {
+                            const newCard = document.querySelector(`[data-semester-id="${newSemester.id}"]`);
+                            newCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // Check if any credits are missing to show a helpful message
+                            const missingCredits = newSemester.courses.some(c => c.credits === "");
+                            uploadStatus.textContent = missingCredits
+                                ? `✅ Success! Please verify the credit hours.`
+                                : `✅ Success! Semester added successfully.`;
+                        }, 100);
+
+                    } else {
+                        throw new Error("Could not find valid course data in the PDF.");
+                    }
+                };
+                fileReader.readAsArrayBuffer(file);
+            } catch (error) {
+                console.error('PDF Parsing Error:', error);
+                uploadStatus.textContent = `❌ Error: ${error.message}`;
+            } finally {
+                setTimeout(() => {
+                    uploadStatus.textContent = 'PDF only, up to 10MB';
+                }, 8000);
+            }
+        }
+
+        // --- CALCULATIONS ---
+        const calculateSGPA = (courses) => {
+            let totalCredits = 0, totalPoints = 0;
+            courses.forEach(c => {
+                const credits = parseFloat(c.credits);
+                if (!isNaN(credits) && credits >= 0 && c.grade) { totalCredits += credits; totalPoints += credits * (GRADE_POINTS[c.grade] || 0); }
+            });
+            return totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+        };
+        const calculateCGPA = (sems) => {
+            let totalCredits = 0, totalWeightedSgpa = 0;
+            sems.forEach(sem => {
+                const semCredits = sem.courses.reduce((acc, c) => acc + (parseFloat(c.credits) || 0), 0);
+                if (semCredits > 0) { totalCredits += semCredits; totalWeightedSgpa += (sem.sgpa || 0) * semCredits; }
+            });
+            return totalCredits > 0 ? (totalWeightedSgpa / totalCredits) : 0;
+        };
+        const calculateProjectedCGPA = () => {
+            let combinedCredits = state.semesters.reduce((sum, sem) => sum + sem.courses.reduce((cSum, c) => cSum + (parseFloat(c.credits) || 0), 0), 0);
+            let combinedWeightedSgpa = state.semesters.reduce((sum, sem) => sum + (sem.sgpa || 0) * sem.courses.reduce((cSum, c) => cSum + (parseFloat(c.credits) || 0), 0), 0);
+            state.plannerSemesters.forEach(pSem => {
+                const credits = parseFloat(pSem.credits); const sgpa = parseFloat(pSem.sgpa);
+                if (!isNaN(credits) && !isNaN(sgpa) && credits > 0) { combinedCredits += credits; combinedWeightedSgpa += sgpa * credits; }
+            });
+            const currentCgpa = calculateCGPA(state.semesters);
+            return combinedCredits > 0 ? (combinedWeightedSgpa / combinedCredits) : currentCgpa;
+        };
+
+        // --- STATE MANAGEMENT & DATA ---
+        function saveData() { localStorage.setItem('gpaAlchemistData_v2.2', JSON.stringify(state)); }
+        function loadData() {
+            const savedData = localStorage.getItem('gpaAlchemistData_v2.2'); // Keep old key for now
+            if (savedData) {
+                state = JSON.parse(savedData);
+                if (!state.plannerSemesters) state.plannerSemesters = [];
+                state.semesters.forEach(s => {
+                    if (s.isCollapsed === undefined) {
+                        s.isCollapsed = false;
+                    }
+                });
+            } else {
+                state = { semesters: [], plannerSemesters: [] };
+                state.semesters.push({ id: `sem-${Date.now()}`, name: `Semester 1`, courses: [{ id: `course-${Date.now()}`, name: "", credits: "", grade: GRADES[0] }], sgpa: 0, isCollapsed: false });
+            }
+            historyManager.init(state); // Initialize history with loaded state
+        }
+        function addSemester(shouldRender = true) {
+            const newSem = { id: `sem-${Date.now()}`, name: `Semester ${state.semesters.length + 1}`, courses: [{ id: `course-${Date.now()}`, name: "", credits: "", grade: GRADES[0] }], sgpa: 0, isCollapsed: false };
+            state.semesters.push(newSem);
+            if (shouldRender) {
+                historyManager.pushState(state);
+                renderApp();
+                // Add this line:
+                setTimeout(() => document.querySelector(`[data-semester-id="${newSem.id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+            }
+        }
+
+        // --- Cool Counts ---
+        const updateSemesterCounts = (semId) => {
+            const sem = state.semesters.find(s => s.id === semId);
+            if (!sem) return;
+
+            const semesterCard = document.querySelector(`[data-semester-id="${semId}"]`);
+            if (!semesterCard) return;
+
+            // Calculate total credits
+            const totalCredits = sem.courses.reduce((acc, course) => acc + (parseFloat(course.credits) || 0), 0);
+
+            // Update the HTML
+            const courseCountEl = semesterCard.querySelector('.course-count');
+            const creditTotalEl = semesterCard.querySelector('.credit-total');
+
+            if (courseCountEl) {
+                courseCountEl.textContent = `(${sem.courses.length})`;
+            }
+            if (creditTotalEl) {
+                // Only show total if it's greater than 0
+                creditTotalEl.textContent = totalCredits > 0 ? `(${totalCredits})` : '';
+            }
+        };
+
+        function addCourse(semId) {
+            const sem = state.semesters.find(s => s.id === semId);
+            if (!sem) return;
+            const newCourse = { id: `course-${Date.now()}`, name: "", credits: "", grade: GRADES[0] };
+            sem.courses.push(newCourse);
+
+            // If semester was collapsed, expand it to show the new course
+            if (sem.isCollapsed) {
+                sem.isCollapsed = false;
+            }
+
+            historyManager.pushState(state);
+            renderApp();
+            updateSemesterCounts(semId);
+
+            // Add this block:
+            setTimeout(() => {
+                const card = document.querySelector(`[data-semester-id="${semId}"]`);
+                card?.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                card?.querySelector('tbody tr:last-child input[type="text"]')?.focus();
+            }, 100);
+        }
+
+        function updateCourse(semId, courseId, field, value) {
+            const sem = state.semesters.find(s => s.id === semId);
+            if (!sem) return;
+            const course = sem.courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            course[field] = value; // Update state immediately
+
+            // Debounce the expensive calculations and data saving
+            debounce(() => {
+                sem.sgpa = calculateSGPA(sem.courses);
+                const semesterCard = document.querySelector(`[data-semester-id="${semId}"]`);
+                if (semesterCard) {
+                    semesterCard.querySelector('.sgpa-value').textContent = sem.sgpa.toFixed(2);
+                }
+                updateDashboard();
+                updateSemesterCounts(semId);
+                historyManager.pushState(state); // Now this only runs after you stop typing
+            }, 300); // Wait 300ms after last keystroke
+        }
+
+        function removeCourse(semId, courseId) {
+            const sem = state.semesters.find(s => s.id === semId);
+            if (sem) {
+                sem.courses = sem.courses.filter(c => c.id !== courseId);
+                sem.sgpa = calculateSGPA(sem.courses);
+                historyManager.pushState(state);
+                renderApp();
+                updateSemesterCounts(semId);
+            }
+        }
+        function removeSemester(semId) {
+            state.semesters = state.semesters.filter(sem => sem.id !== semId);
+            historyManager.pushState(state);
+            renderApp();
+        }
+        function updateSemesterName(semId, name) {
+            const sem = state.semesters.find(s => s.id === semId);
+            if (sem) {
+                sem.name = name; historyManager.pushState(state);
+                renderApp(); updateDashboard();
+            }
+        }
+        function addPlannerSemester() {
+            state.plannerSemesters.push({ id: `plan-${Date.now()}`, credits: "", sgpa: "" }); renderPlanner(); historyManager.pushState(state);
+            renderApp();
+        }
+        function updatePlannerSemester(id, field, value) {
+            const pSem = state.plannerSemesters.find(ps => ps.id === id);
+            if (pSem) pSem[field] = value;
+            updateDashboard(); historyManager.pushState(state);
+            renderApp();
+        }
+        function removePlannerSemester(id) {
+            state.plannerSemesters = state.plannerSemesters.filter(ps => ps.id !== id); renderPlanner(); updateDashboard(); historyManager.pushState(state);
+            renderApp();
+        }
+
+        // --- UI ELEMENT CREATION (RENDERING HELPERS) ---
+        const createCourseRow = (course, semId) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td data-label="Course Name" class="p-2 align-top"><input class="input-field w-full rounded-md p-2 text-sm" type="text" list="course-suggestions" placeholder="Course Name" value="${course.name}"></td>
+            <td data-label="Credits" class="p-2 align-top"><input class="input-field w-24 rounded-md p-2 text-sm" type="number" step="0.5" min="0" placeholder="Credits" value="${course.credits}"></td>
+            <td data-label="Grade" class="p-2 align-top">
+                <div class="custom-select-container">
+                    <select class="input-field w-full rounded-md p-2 text-sm hidden">
+                        ${GRADES.map(g => `<option value="${g}" ${course.grade === g ? 'selected' : ''}>${g}</option>`).join('')}
+                    </select>
+                    <div class="custom-select-trigger input-field w-full rounded-md p-2 text-sm">
+                        <span class="selected-option">${course.grade}</span>
+                    </div>
+                    <div class="custom-options hidden">
+                        ${GRADES.map(g => `<div class="custom-option ${course.grade === g ? 'selected' : ''}" data-value="${g}">${g}</div>`).join('')}
+                    </div>
+                </div>
+            </td>
+            <td class="p-2 text-center align-top"><button class="text-red-500 hover:text-red-700 p-1">🗑️</button></td>
+        `;
+
+            // --- Event listeners for regular inputs ---
+            tr.querySelector('input[type="text"]').addEventListener('input', (e) => updateCourse(semId, course.id, 'name', e.target.value));
+            tr.querySelector('input[type="number"]').addEventListener('input', (e) => updateCourse(semId, course.id, 'credits', e.target.value));
+            tr.querySelector('button').addEventListener('click', () => removeCourse(semId, course.id));
+
+            // --- Logic for the new custom dropdown ---
+            const container = tr.querySelector('.custom-select-container');
+            const trigger = container.querySelector('.custom-select-trigger');
+            const options = container.querySelector('.custom-options');
+            const realSelect = container.querySelector('select');
+            const selectedDisplay = trigger.querySelector('.selected-option');
+
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isCurrentlyOpen = !options.classList.contains('hidden');
+                const parentCard = container.closest('.semester-card');
+
+                // First, unconditionally close all dropdowns and remove elevation from all cards.
+                document.querySelectorAll('.custom-options').forEach(opt => opt.classList.add('hidden'));
+                document.querySelectorAll('.custom-select-container').forEach(cont => cont.classList.remove('z-index-elevated'));
+                document.querySelectorAll('.semester-card').forEach(card => card.classList.remove('z-index-elevated'));
+
+                // If the dropdown we clicked was NOT already open, then re-open it and elevate its PARENT CARD.
+                if (!isCurrentlyOpen) {
+                    options.classList.remove('hidden');
+                    container.classList.add('z-index-elevated');
+                    if (parentCard) {
+                        parentCard.classList.add('z-index-elevated');
+                    }
+                }
+            });
+
+            options.addEventListener('click', (e) => {
+                if (e.target.classList.contains('custom-option')) {
+                    const newValue = e.target.dataset.value;
+                    selectedDisplay.textContent = newValue;
+                    realSelect.value = newValue;
+                    updateCourse(semId, course.id, 'grade', newValue);
+                    options.querySelector('.selected')?.classList.remove('selected');
+                    e.target.classList.add('selected');
+
+                    // Close and lower the z-index of the PARENT CARD after selection
+                    options.classList.add('hidden');
+                    const parentCard = container.closest('.semester-card');
+                    if (parentCard) {
+                        parentCard.classList.remove('z-index-elevated');
+                    }
+                }
+            });
+            return tr;
+        };
+        const createSemesterCard = (semester) => {
+            const card = document.createElement('div');
+            // We add the 'collapsed' class here if the semester's state is collapsed
+            card.className = `glass-card p-6 semester-card ${semester.isCollapsed ? 'collapsed' : ''}`;
+            card.setAttribute('draggable', true);
+            card.setAttribute('data-semester-id', semester.id);
+
+            // New HTML structure for the card
+            card.innerHTML = `
+                <div class="flex justify-between items-center semester-header">
+                    <div class="flex items-center gap-2 flex-grow min-w-0">
+                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 drag-handle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 collapse-icon flex-shrink-0 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        <input class="text-xl font-bold bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2" value="${semester.name}">
+                    </div>
+                    <div class="flex items-center space-x-4 ml-4 flex-shrink-0">
+                        <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">SGPA:</span>
+                        <span class="sgpa-value text-2xl font-bold text-blue-600 dark:text-blue-400">${semester.sgpa.toFixed(2)}</span>
+                        <button class="delete-semester-btn text-red-500 hover:text-red-700 p-1 font-bold" title="Delete Semester">❌</button>
+                    </div>
+                </div>
+                <div class="collapsible-content ${semester.isCollapsed ? 'hidden' : ''} pt-4">
+                    <table class="w-full responsive-table">
+                        <thead class="border-b border-gray-300 dark:border-gray-600">
+                            <tr>
+                                <th class="p-2 text-left text-sm font-semibold">
+                                    Course <span class="course-count font-mono font-normal text-gray-400"></span>
+                                </th>
+                                <th class="p-2 text-left text-sm font-semibold">
+                                    Credits <span class="credit-total font-mono font-normal text-gray-400"></span>
+                                </th>
+                                <th class="p-2 text-left text-sm font-semibold">Grade</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button class="add-course-btn mt-4 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Add Course</button>
+                </div>`;
+
+            const tbody = card.querySelector('tbody');
+            if (semester.courses.length > 0) {
+                semester.courses.forEach(c => tbody.appendChild(createCourseRow(c, semester.id)));
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4"><p class="no-courses-message">No courses added yet. Click "Add Course" to begin.</p></td></tr>`;
+            }
+
+            // Event Listeners for the new structure
+            card.querySelector('.semester-header').addEventListener('click', (e) => {
+                // Only toggle if the click is NOT on an input or a button
+                if (!e.target.closest('input, button')) {
+                    toggleSemesterCollapse(semester.id);
+                }
+            });
+
+            card.querySelector('input.text-xl').addEventListener('change', (e) => updateSemesterName(semester.id, e.target.value));
+            card.querySelector('.add-course-btn').addEventListener('click', () => addCourse(semester.id));
+            card.querySelector('.delete-semester-btn').addEventListener('click', () => {
+                if (confirm(`Are you sure you want to delete "${semester.name}"? This action can be undone.`)) {
+                    removeSemester(semester.id);
+                }
+            });
+
+            return card;
+        };
+        const createPlannerRow = (pSem) => {
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-1 sm:grid-cols-3 gap-4 items-center";
+            div.innerHTML = `<input class="input-field w-full rounded-md p-2" type="number" step="0.5" min="0" placeholder="Total Credits for Semester" value="${pSem.credits}"><input class="input-field w-full rounded-md p-2" type="number" step="0.01" min="0" max="10" placeholder="Expected SGPA" value="${pSem.sgpa}"><button class="text-red-500 hover:text-red-700 p-1 font-semibold">Remove</button>`;
+            div.querySelectorAll('input')[0].addEventListener('input', (e) => updatePlannerSemester(pSem.id, 'credits', e.target.value));
+            div.querySelectorAll('input')[1].addEventListener('input', (e) => updatePlannerSemester(pSem.id, 'sgpa', e.target.value));
+            div.querySelector('button').addEventListener('click', () => removePlannerSemester(pSem.id));
+            return div;
+        };
+
+        // --- DASHBOARD & CHART UPDATES ---
+        function updateDashboard() {
+            cgpaDisplay.textContent = calculateCGPA(state.semesters).toFixed(2);
+            projectedCgpaDisplay.textContent = calculateProjectedCGPA().toFixed(2);
+            updateGradeChart();
+            updateSgpaTrendChart();
+            updateKeyStats();
+        }
+
+        const updateKeyStats = () => {
+            if (state.semesters.length === 0 || state.semesters.every(s => s.courses.length === 0)) {
+                keyStatsContainer.innerHTML = `<p class="text-gray-500">No data to display. Add a semester to see stats.</p>`;
+                return;
+            }
+
+            let totalCredits = 0, totalCourses = 0, passedCourses = 0;
+            state.semesters.forEach(sem => {
+                sem.courses.forEach(c => {
+                    const credits = parseFloat(c.credits) || 0;
+                    if (credits > 0) {
+                        totalCredits += credits;
+                        totalCourses++;
+                        if (c.grade !== 'F') passedCourses++;
+                    }
+                });
+            });
+
+            const validSems = state.semesters.filter(s => s.sgpa > 0);
+            const bestSem = validSems.length > 0 ? validSems.reduce((max, sem) => sem.sgpa > max.sgpa ? sem : max) : null;
+            const worstSem = validSems.length > 0 ? validSems.reduce((min, sem) => sem.sgpa < min.sgpa ? sem : min) : null;
+
+            keyStatsContainer.innerHTML = `
+                <div class="flex justify-between"><span>Total Credits Earned:</span><span class="font-bold">${totalCredits.toFixed(1)}</span></div>
+                <div class="flex justify-between"><span>Total Courses Passed:</span><span class="font-bold">${passedCourses} / ${totalCourses}</span></div>
+                <div class="flex justify-between"><span>Highest SGPA:</span><span class="font-bold text-green-500">${bestSem ? `${bestSem.sgpa.toFixed(2)} (${bestSem.name})` : 'N/A'}</span></div>
+                <div class="flex justify-between"><span>Lowest SGPA:</span><span class="font-bold text-red-500">${worstSem ? `${worstSem.sgpa.toFixed(2)} (${worstSem.name})` : 'N/A'}</span></div>
+            `;
+        }
+
+        const updateGradeChart = () => {
+            const gradeCtx = document.getElementById('grade-dist-chart').getContext('2d');
+            const counts = GRADES.reduce((acc, g) => ({ ...acc, [g]: 0 }), {});
+            state.semesters.forEach(sem => sem.courses.forEach(c => { if (c.grade && (parseFloat(c.credits) > 0)) counts[c.grade]++; }));
+            if (gradeDistChart) gradeDistChart.destroy();
+            gradeDistChart = new Chart(gradeCtx, {
+                type: 'doughnut', data: { labels: GRADES, datasets: [{ data: Object.values(counts), backgroundColor: ['#10b981', '#22c55e', '#84cc16', '#a3e635', '#eab308', '#f59e0b', '#f97316', '#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d'], borderColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: document.documentElement.classList.contains('dark') ? '#f1f5f9' : '#1e293b' } } } }
+            });
+        };
+
+        const updateSgpaTrendChart = () => {
+            const trendCtx = document.getElementById('sgpa-trend-chart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+
+            // Semesters are already in chronological order because we use .push()
+            const labels = state.semesters.map(s => s.name);
+            const data = state.semesters.map(s => s.sgpa);
+
+            if (sgpaTrendChart) sgpaTrendChart.destroy();
+
+            sgpaTrendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'SGPA',
+                        data: data,
+                        fill: true,
+                        borderColor: isDark ? '#a78bfa' : '#4f46e5',
+                        backgroundColor: isDark ? 'rgba(167, 139, 250, 0.1)' : 'rgba(79, 70, 229, 0.1)',
+                        tension: 0.4, // Makes the line smoother
+                        pointBackgroundColor: isDark ? '#a78bfa' : '#4f46e5',
+                        pointHoverRadius: 7,
+                        pointHoverBorderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            max: 10,
+                            grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' },
+                            ticks: { color: isDark ? '#94a3b8' : '#475569' }
+                        },
+                        x: {
+                            grid: { display: false }, // Cleaner look
+                            ticks: { color: isDark ? '#94a3b8' : '#475569' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: isDark ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                            titleColor: isDark ? '#f1f5f9' : '#1e293b',
+                            bodyColor: isDark ? '#f1f5f9' : '#1e293b',
+                            borderColor: isDark ? 'rgba(56, 71, 95, 0.7)' : 'rgba(209, 213, 219, 0.8)',
+                            borderWidth: 1,
+                            padding: 10,
+                            caretPadding: 10,
+                            callbacks: {
+                                label: function (context) {
+                                    return `SGPA: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            });
+        };
+
+        // --- Drag and Drop Sorting ---
+        semestersContainer.addEventListener('dragstart', e => {
+            // Only act on semester cards, not other elements inside
+            if (e.target.classList.contains('semester-card')) {
+                e.target.classList.add('dragging');
+            }
+        });
+
+        semestersContainer.addEventListener('dragend', e => {
+            if (e.target.classList.contains('semester-card')) {
+                e.target.classList.remove('dragging');
+            }
+        });
+
+        semestersContainer.addEventListener('dragover', e => {
+            e.preventDefault(); // This is necessary to allow a drop
+            const dragging = document.querySelector('.dragging');
+            if (!dragging) return;
+
+            // Figure out which element we should place the dragging card before
+            const afterElement = getDragAfterElement(semestersContainer, e.clientY);
+
+            if (afterElement == null) {
+                semestersContainer.appendChild(dragging);
+            } else {
+                semestersContainer.insertBefore(dragging, afterElement);
+            }
+        });
+
+        semestersContainer.addEventListener('drop', e => {
+            e.preventDefault();
+            const draggingCard = document.querySelector('.dragging');
+            if (!draggingCard) return;
+
+            // Get the new order of semester IDs from the DOM
+            const newOrderIds = [...semestersContainer.querySelectorAll('.semester-card')].map(card => card.dataset.semesterId);
+
+            // Re-sort the actual state array to match the new DOM order
+            state.semesters.sort((a, b) => newOrderIds.indexOf(a.id) - newOrderIds.indexOf(b.id));
+
+            // Push the new order to the history so it's undoable
+            historyManager.pushState(state);
+
+            // Re-render to ensure perfect sync between state and UI
+            renderApp();
+        });
+
+        // Helper function to calculate where to drop the item
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.semester-card:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // --- MAIN RENDER & EVENT LISTENERS ---
+        const renderPlanner = () => {
+            plannerContainer.innerHTML = '';
+            state.plannerSemesters.forEach(pSem => plannerContainer.appendChild(createPlannerRow(pSem)));
+            projectedCgpaDisplay.textContent = calculateProjectedCGPA().toFixed(2);
+        };
+        const renderApp = () => {
+            semestersContainer.innerHTML = ''; // Clear previous content
+            if (state.semesters.length === 0) {
+                semestersContainer.innerHTML = `
+            <div class="empty-state">
+                <h3 class="text-xl font-semibold">No Semesters Yet</h3>
+                <p class="mt-2">Click "Add Semester Manually" or upload a PDF to get started.</p>
+            </div>
+        `;
+            } else {
+                state.semesters.forEach(sem => semestersContainer.appendChild(createSemesterCard(sem)));
+            }
+
+            renderPlanner();
+            updateDashboard();
+            state.semesters.forEach(sem => updateSemesterCounts(sem.id));
+        };
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+        const applyTheme = (isDark) => {
+            document.documentElement.classList.toggle('dark', isDark);
+            darkIcon.classList.toggle('hidden', isDark);
+            lightIcon.classList.toggle('hidden', !isDark);
+            if (state.semesters.length > 0) {
+                updateGradeChart();
+                updateSgpaTrendChart();
+            }
+        };
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { applyTheme(true); } else { applyTheme(false); }
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            applyTheme(isDark);
+        });
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const datalist = document.getElementById('course-suggestions');
+            const uniqueCourses = {};
+            Object.keys(COURSE_CREDIT_MAP).forEach(code => {
+                // A simple way to guess a name from the code - you can improve this
+                const name = code.replace(/-/g, ' ').replace(/\d/g, m => ` ${m}`).split(' ').map(s => s.charAt(0) + s.slice(1).toLowerCase()).join(' ').replace(/\s+/g, ' ').trim();
+                if (!uniqueCourses[name]) {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    datalist.appendChild(option);
+                    uniqueCourses[name] = true;
+                }
+            });
+
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.custom-options').forEach(opt => opt.classList.add('hidden'));
+                // Make sure to remove elevation from all semester cards
+                document.querySelectorAll('.semester-card').forEach(card => card.classList.remove('z-index-elevated'));
+            });
+
+            addSemesterBtn.addEventListener('click', () => { addSemester(); saveData(); });
+            addPlannerBtn.addEventListener('click', addPlannerSemester);
+            clearDataBtn.addEventListener('click', () => {
+                if (confirm("Are you sure you want to delete all your saved GPA data? This action cannot be undone.")) {
+                    localStorage.removeItem('gpaAlchemistData_v2.2');
+                    state = { semesters: [], plannerSemesters: [] };
+                    // Add one clean semester to start
+                    state.semesters.push({ id: `sem-${Date.now()}`, name: `Semester 1`, courses: [{ id: `course-${Date.now()}`, name: "", credits: "", grade: GRADES[0] }], sgpa: 0 });
+                    historyManager.init(state); // Re-initialize history
+                    renderApp();
+                    saveData(); // Initial save
+                }
+            });
+
+            pdfUploadInput.addEventListener('change', (e) => { if (e.target.files.length > 0) parsePdf(e.target.files[0]); });
+            dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10'); });
+            dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10'); });
+            dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-500/10'); if (e.dataTransfer.files.length > 0) parsePdf(e.dataTransfer.files[0]); });
+
+
+            undoBtn.addEventListener('click', () => historyManager.undo());
+            redoBtn.addEventListener('click', () => historyManager.redo());
+            exportBtn.addEventListener('click', exportData);
+            importFile.addEventListener('change', importData);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    historyManager.undo();
+                }
+                if (e.ctrlKey && e.key.toLowerCase() === 'y') {
+                    e.preventDefault();
+                    historyManager.redo();
+                }
+            });
+
+            loadData();
+            renderApp();
+        });
+    </script>
+</body>
+
+</html>
